@@ -12,20 +12,20 @@
       <div>
         <p class="eyebrow">Badminton Squad</p>
         <h1>Court Bookings</h1>
-        <p class="subtext">Add bookings manually or upload a booking screenshot. Friends can view, edit, delete, and vote availability.</p>
+        <p class="subtext">Add bookings manually or from a screenshot. Friends can view, edit, delete, and vote in the daily availability poll.</p>
       </div>
       <button class="ghost" onclick="loadAll()">Refresh</button>
     </section>
 
-    <section id="pollCard" class="card pollCard hidden">
+    <section id="pollCard" class="card pollCard">
       <div class="sectionTitle">
         <div>
           <p class="eyebrow">Daily Poll</p>
           <h2 id="pollTitle">Next booking availability</h2>
-          <p id="pollMeta" class="muted"></p>
+          <p id="pollMeta" class="muted">Poll will appear here for the next upcoming booking.</p>
         </div>
       </div>
-      <div id="pollGrid" class="pollGrid"></div>
+      <div id="pollGrid" class="pollGrid"><p class="muted">No poll loaded yet. Add a future booking or click refresh.</p></div>
     </section>
 
     <section class="grid">
@@ -101,7 +101,7 @@
       <div class="sectionTitle split">
         <div>
           <p class="eyebrow">Live List</p>
-          <h2>Current Bookings</h2>
+          <h2>Current Bookings</h2><p class="muted">Dates are shown as DD-MON-YY. Use Edit/Delete from each booking card.</p>
         </div>
         <button class="secondary" onclick="loadAll()">Refresh</button>
       </div>

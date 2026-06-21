@@ -70,12 +70,25 @@ function renderPoll(bookings, polls) {
   const today = new Date(); today.setHours(0,0,0,0);
   const next = bookings.find(b => new Date(b.date + "T00:00:00") >= today);
   const pollCard = document.getElementById("pollCard");
-  if (!next) { pollCard.classList.add("hidden"); return; }
+  const pollTitle = document.getElementById("pollTitle");
+  const pollMeta = document.getElementById("pollMeta");
+  const pollGrid = document.getElementById("pollGrid");
+
+  // Keep this section always visible so you can clearly see whether a poll exists.
   pollCard.classList.remove("hidden");
-  document.getElementById("pollTitle").textContent = `Availability for ${formatDate(next.date)}`;
-  document.getElementById("pollMeta").textContent = `${next.place} • ${next.court} • ${next.timing}`;
-  const latest = Object.fromEntries((polls || []).filter(p => p.bookingId === next.id).map(p => [p.player, p.answer]));
-  document.getElementById("pollGrid").innerHTML = PLAYERS.map(player => `
+
+  if (!next) {
+    pollTitle.textContent = "Daily Availability Poll";
+    pollMeta.textContent = "No future booking found. Add a future booking and the poll will appear here automatically.";
+    pollGrid.innerHTML = `<p class="muted">No poll available yet.</p>`;
+    return;
+  }
+
+  pollTitle.textContent = `Availability Poll • ${formatDate(next.date)}`;
+  pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
+
+  const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
+  pollGrid.innerHTML = PLAYERS.map(player => `
     <div class="pollRow">
       <strong>${player}</strong>
       <button class="voteBtn yes ${latest[player] === "Yes" ? "selected" : ""}" onclick='vote("${next.id}", "${player}", "Yes")'>Yes</button>
