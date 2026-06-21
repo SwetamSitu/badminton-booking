@@ -1,6 +1,7 @@
 // Replace this with your deployed Google Apps Script Web App URL.
 const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxaIg3uNltJ3gPdwCge5Erx5wZ8_g_yjrE0IoT63YKczjTv5w/exec";
 const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval"].sort();
+let currentPollBookingId = null;
 
 const form = document.getElementById("bookingForm");
 const statusText = document.getElementById("status");
@@ -74,47 +75,97 @@ function renderPoll(bookings, polls) {
   const pollMeta = document.getElementById("pollMeta");
   const pollGrid = document.getElementById("pollGrid");
   const pollSummary = document.getElementById("pollSummary");
+  const pollVoteBox = document.getElementById("pollVoteBox");
+  const pollResultLists = document.getElementById("pollResultLists");
 
-  // Keep this section always visible so you can clearly see whether a poll exists.
   pollCard.classList.remove("hidden");
 
   if (!next) {
+    currentPollBookingId = null;
     pollTitle.textContent = "Daily Availability Poll";
     pollMeta.textContent = "No future booking found. Add a future booking and the poll will appear here automatically.";
     pollSummary.classList.add("hidden");
+    pollVoteBox.classList.add("hidden");
+    pollResultLists.classList.add("hidden");
     pollGrid.innerHTML = `<p class="muted">No poll available yet.</p>`;
     return;
   }
 
+  currentPollBookingId = next.id;
   pollTitle.textContent = `Availability Poll • ${formatDate(next.date)}`;
   pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
 
   const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
   updatePollSummary(latest);
-  pollGrid.innerHTML = PLAYERS.map(player => `
-    <div class="pollRow">
-      <strong>${player}</strong>
-      <button class="voteBtn yes ${latest[player] === "Yes" ? "selected" : ""}" onclick='vote("${next.id}", "${player}", "Yes")'>Yes</button>
-      <button class="voteBtn no ${latest[player] === "No" ? "selected" : ""}" onclick='vote("${next.id}", "${player}", "No")'>No</button>
-    </div>
-  `).join("");
+  renderPollVoteForm(latest);
+  renderPollResultLists(latest);
+  pollGrid.innerHTML = "";
+}
+
+function renderPollVoteForm(latest) {
+  const pollVoteBox = document.getElementById("pollVoteBox");
+  const playerSelect = document.getElementById("pollPlayer");
+  const selectedPlayer = playerSelect.value;
+
+  playerSelect.innerHTML = `<option value="">Choose name</option>` + PLAYERS.map(player => `<option value="${player}">${player}</option>`).join("");
+  if (selectedPlayer) playerSelect.value = selectedPlayer;
+
+  document.querySelectorAll('input[name="pollAnswer"]').forEach(radio => radio.checked = false);
+  if (playerSelect.value && latest[playerSelect.value]) {
+    const selectedAnswer = latest[playerSelect.value];
+    const radio = document.querySelector(`input[name="pollAnswer"][value="${selectedAnswer}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  playerSelect.onchange = () => {
+    document.querySelectorAll('input[name="pollAnswer"]').forEach(radio => radio.checked = radio.value === latest[playerSelect.value]);
+  };
+
+  pollVoteBox.classList.remove("hidden");
+}
+
+function renderPollResultLists(latest) {
+  const yesPlayers = PLAYERS.filter(player => latest[player] === "Yes");
+  const noPlayers = PLAYERS.filter(player => latest[player] === "No");
+
+  document.getElementById("yesNames").innerHTML = yesPlayers.length
+    ? yesPlayers.map(name => `<span class="nameChip yesChip">${name}</span>`).join("")
+    : `<span class="muted">No Yes votes yet.</span>`;
+
+  document.getElementById("noNames").innerHTML = noPlayers.length
+    ? noPlayers.map(name => `<span class="nameChip noChip">${name}</span>`).join("")
+    : `<span class="muted">No No votes yet.</span>`;
+
+  document.getElementById("pollResultLists").classList.remove("hidden");
 }
 
 function updatePollSummary(latest) {
   const pollSummary = document.getElementById("pollSummary");
   const yesCount = Object.values(latest).filter(answer => answer === "Yes").length;
   const noCount = Object.values(latest).filter(answer => answer === "No").length;
-  const pendingCount = PLAYERS.length - yesCount - noCount;
 
   document.getElementById("yesCount").textContent = yesCount;
   document.getElementById("noCount").textContent = noCount;
-  document.getElementById("pendingCount").textContent = pendingCount;
   pollSummary.classList.remove("hidden");
 }
 
-async function vote(bookingId, player, answer) {
-  await postData({ action: "savePoll", bookingId, player, answer });
-  loadAll();
+async function submitPollVote() {
+  const player = document.getElementById("pollPlayer").value;
+  const answer = document.querySelector('input[name="pollAnswer"]:checked')?.value;
+  const pollVoteStatus = document.getElementById("pollVoteStatus");
+
+  if (!currentPollBookingId) { pollVoteStatus.textContent = "No active poll found."; return; }
+  if (!player) { pollVoteStatus.textContent = "Please select your name."; return; }
+  if (!answer) { pollVoteStatus.textContent = "Please select Yes or No."; return; }
+
+  pollVoteStatus.textContent = "Saving vote...";
+  const result = await postData({ action: "savePoll", bookingId: currentPollBookingId, player, answer });
+  if (result.success) {
+    pollVoteStatus.textContent = "Vote saved.";
+    loadAll();
+  } else {
+    pollVoteStatus.textContent = result.message || "Could not save vote.";
+  }
 }
 
 async function deleteBooking(id) {

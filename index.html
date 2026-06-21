@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Full Gardaa Badminton Group Court Bookings</title>
+  <title>Full Gardaa Badminton Court Bookings</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -28,7 +28,32 @@
       <div id="pollSummary" class="pollSummary hidden">
         <div class="summaryCard yesCard"><span>Yes</span><strong id="yesCount">0</strong></div>
         <div class="summaryCard noCard"><span>No</span><strong id="noCount">0</strong></div>
-        <div class="summaryCard pendingCard"><span>Pending</span><strong id="pendingCount">7</strong></div>
+      </div>
+
+      <div id="pollVoteBox" class="pollVoteBox hidden">
+        <label for="pollPlayer">Select your name</label>
+        <select id="pollPlayer">
+          <option value="">Choose name</option>
+        </select>
+
+        <div class="voteChoice" role="radiogroup" aria-label="Availability vote">
+          <label class="choice yesChoice"><input type="radio" name="pollAnswer" value="Yes" /> Yes</label>
+          <label class="choice noChoice"><input type="radio" name="pollAnswer" value="No" /> No</label>
+        </div>
+
+        <button type="button" onclick="submitPollVote()">Submit Vote</button>
+        <p id="pollVoteStatus" class="status"></p>
+      </div>
+
+      <div id="pollResultLists" class="pollResultLists hidden">
+        <div class="resultList yesList">
+          <h3>Available</h3>
+          <div id="yesNames" class="nameChips"></div>
+        </div>
+        <div class="resultList noList">
+          <h3>Not Available</h3>
+          <div id="noNames" class="nameChips"></div>
+        </div>
       </div>
       <div id="pollGrid" class="pollGrid"><p class="muted">No poll loaded yet. Add a future booking or click refresh.</p></div>
     </section>
