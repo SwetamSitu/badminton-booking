@@ -1,5 +1,5 @@
 // Replace this with your deployed Google Apps Script Web App URL.
-const API_URL = "https://script.google.com/macros/s/AKfycbzpUJatBVZ1K8naxNRiIsu8bBuWU7QTUnN8Cd5b0blIe3WcSLn3r2zaKwEAyHVlcv9L8g/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxaIg3uNltJ3gPdwCge5Erx5wZ8_g_yjrE0IoT63YKczjTv5w/exec";
 
 const form = document.getElementById("bookingForm");
 const statusText = document.getElementById("status");
