@@ -1,6 +1,6 @@
 // Replace this with your deployed Google Apps Script Web App URL.
 const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxaIg3uNltJ3gPdwCge5Erx5wZ8_g_yjrE0IoT63YKczjTv5w/exec";
-const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval"];
+const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval"].sort();
 
 const form = document.getElementById("bookingForm");
 const statusText = document.getElementById("status");
