@@ -134,7 +134,7 @@ function renderPollResultLists(latest) {
 
   document.getElementById("noNames").innerHTML = noPlayers.length
     ? noPlayers.map(name => `<span class="nameChip noChip">${name}</span>`).join("")
-    : `<span class="muted">No No votes yet.</span>`;
+    : `<span class="muted">No votes yet.</span>`;
 
   document.getElementById("pollResultLists").classList.remove("hidden");
 }
