@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Full Gardaa Badminton Group</title>
+  <title>Full Gardaa Badminton Group Court Bookings</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,7 +12,7 @@
       <div>
         <p class="eyebrow">Full Gardaa Badminton Group</p>
         <h1>Court Bookings</h1>
-        <p class="subtext">Add bookings manually or from a screenshot. Anyone can view, edit, delete, and vote in the daily availability poll.</p>
+        <p class="subtext">Add bookings manually or from a screenshot. Friends can view, edit, delete, and vote in the daily availability poll.</p>
       </div>
       <button class="ghost" onclick="loadAll()">Refresh</button>
     </section>
@@ -24,6 +24,11 @@
           <h2 id="pollTitle">Next booking availability</h2>
           <p id="pollMeta" class="muted">Poll will appear here for the next upcoming booking.</p>
         </div>
+      </div>
+      <div id="pollSummary" class="pollSummary hidden">
+        <div class="summaryCard yesCard"><span>Yes</span><strong id="yesCount">0</strong></div>
+        <div class="summaryCard noCard"><span>No</span><strong id="noCount">0</strong></div>
+        <div class="summaryCard pendingCard"><span>Pending</span><strong id="pendingCount">7</strong></div>
       </div>
       <div id="pollGrid" class="pollGrid"><p class="muted">No poll loaded yet. Add a future booking or click refresh.</p></div>
     </section>

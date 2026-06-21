@@ -73,6 +73,7 @@ function renderPoll(bookings, polls) {
   const pollTitle = document.getElementById("pollTitle");
   const pollMeta = document.getElementById("pollMeta");
   const pollGrid = document.getElementById("pollGrid");
+  const pollSummary = document.getElementById("pollSummary");
 
   // Keep this section always visible so you can clearly see whether a poll exists.
   pollCard.classList.remove("hidden");
@@ -80,6 +81,7 @@ function renderPoll(bookings, polls) {
   if (!next) {
     pollTitle.textContent = "Daily Availability Poll";
     pollMeta.textContent = "No future booking found. Add a future booking and the poll will appear here automatically.";
+    pollSummary.classList.add("hidden");
     pollGrid.innerHTML = `<p class="muted">No poll available yet.</p>`;
     return;
   }
@@ -88,6 +90,7 @@ function renderPoll(bookings, polls) {
   pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
 
   const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
+  updatePollSummary(latest);
   pollGrid.innerHTML = PLAYERS.map(player => `
     <div class="pollRow">
       <strong>${player}</strong>
@@ -95,6 +98,18 @@ function renderPoll(bookings, polls) {
       <button class="voteBtn no ${latest[player] === "No" ? "selected" : ""}" onclick='vote("${next.id}", "${player}", "No")'>No</button>
     </div>
   `).join("");
+}
+
+function updatePollSummary(latest) {
+  const pollSummary = document.getElementById("pollSummary");
+  const yesCount = Object.values(latest).filter(answer => answer === "Yes").length;
+  const noCount = Object.values(latest).filter(answer => answer === "No").length;
+  const pendingCount = PLAYERS.length - yesCount - noCount;
+
+  document.getElementById("yesCount").textContent = yesCount;
+  document.getElementById("noCount").textContent = noCount;
+  document.getElementById("pendingCount").textContent = pendingCount;
+  pollSummary.classList.remove("hidden");
 }
 
 async function vote(bookingId, player, answer) {

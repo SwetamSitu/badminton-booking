@@ -15,3 +15,12 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
   .card{margin-bottom:12px;border-radius:18px;box-shadow:0 10px 24px rgba(17,24,39,.06)}
   .sectionTitle{flex-direction:column}.buttonRow button{width:100%}.booking{padding:14px}.datePill{font-size:22px}.meta .chip{font-size:12px}.actions button{flex:1}.pollRow{grid-template-columns:1fr 72px 72px}.voteBtn{padding:10px 8px}
 }
+
+.pollSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 18px}
+.summaryCard{border-radius:18px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);font-weight:900}
+.summaryCard span{text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.summaryCard strong{font-size:28px;line-height:1}
+.yesCard{background:#ecfdf3;color:#067647;border-color:#bbf7d0}
+.noCard{background:#fef3f2;color:#b42318;border-color:#fecaca}
+.pendingCard{background:#f8fafc;color:#475467;border-color:#e5e7eb}
+@media(max-width:560px){.pollSummary{grid-template-columns:1fr}.summaryCard{padding:12px 14px}.summaryCard strong{font-size:24px}}
