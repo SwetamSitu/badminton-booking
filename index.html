@@ -14,16 +14,16 @@
         <h1>Court Bookings</h1>
         <p class="subtext">Anyone can view, add, edit, or delete bookings, vote in availability polls, and create bookings manually or by uploading a screenshot.</p>
       </div>
-      <button class="ghost" onclick="loadAll()">Refresh</button>
     </section>
 
     <section id="pollCard" class="card pollCard">
-      <div class="sectionTitle">
+      <div class="sectionTitle split">
         <div>
           <p class="eyebrow">Daily Poll</p>
           <h2 id="pollTitle">Next booking availability</h2>
           <p id="pollMeta" class="muted">Poll will appear here for the next upcoming booking.</p>
         </div>
+        <button type="button" class="secondary" onclick="loadAll()">Refresh Poll</button>
       </div>
       <div id="pollSummary" class="pollSummary hidden">
         <div class="summaryCard yesCard"><span>Yes</span><strong id="yesCount">0</strong></div>
@@ -65,7 +65,7 @@
         <div>
           <p class="eyebrow">7 AM Reminder</p>
           <h2>WhatsApp Vote Reminder</h2>
-          <p id="whatsappReminderMeta" class="muted">A WhatsApp share button will appear here after 10 AM when there is a booking today.</p>
+          <p id="whatsappReminderMeta" class="muted">A WhatsApp share button will appear here after 7 AM when there is a booking today.</p>
         </div>
       </div>
       <div id="whatsappReminderBox" class="whatsappReminderBox hidden">
