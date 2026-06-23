@@ -162,3 +162,66 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
 /* v10: Live list actions */
 .liveListActions{justify-content:flex-end}
 @media(max-width:560px){.liveListActions{width:100%}.liveListActions button{width:100%}}
+
+
+/* v11: Compact and mobile-friendly Refresh Poll button */
+.pollRefreshBtn{
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:10px 16px;
+  font-size:14px;
+  font-weight:900;
+  background:#fff;
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  white-space:nowrap;
+  box-shadow:0 8px 20px rgba(17,24,39,.06);
+}
+
+.pollRefreshBtn:hover{
+  transform:translateY(-1px);
+}
+
+@media(max-width:560px){
+  .pollCard .sectionTitle{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:start;
+    gap:10px;
+  }
+
+  .pollCard .sectionTitle > div{
+    min-width:0;
+  }
+
+  .pollCard .sectionTitle h2{
+    font-size:26px;
+    line-height:1.08;
+    padding-right:0;
+  }
+
+  .pollCard .sectionTitle .muted{
+    font-size:18px;
+    line-height:1.35;
+  }
+
+  .pollRefreshBtn{
+    padding:8px 12px;
+    font-size:13px;
+    min-height:38px;
+    box-shadow:0 6px 14px rgba(17,24,39,.05);
+  }
+}
+
+@media(max-width:390px){
+  .pollCard .sectionTitle{
+    grid-template-columns:1fr;
+  }
+
+  .pollRefreshBtn{
+    width:max-content;
+  }
+}
