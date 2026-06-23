@@ -153,8 +153,12 @@
           <p class="eyebrow">Live List</p>
           <h2>Current Bookings</h2><p class="muted">Dates are shown as DD-MON-YY. Use Edit/Delete from each booking card.</p>
         </div>
-        <button class="secondary" onclick="loadAll()">Refresh</button>
+        <div class="buttonRow liveListActions">
+          <button class="secondary" onclick="loadAll()">Refresh</button>
+          <button class="danger" onclick="deletePastBookings()">Delete Past Bookings</button>
+        </div>
       </div>
+      <p id="deletePastStatus" class="status"></p>
       <div id="bookingCards" class="bookingCards"></div>
     </section>
   </main>

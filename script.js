@@ -2,6 +2,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxaIg3uNltJ3gPdwCge5Erx5wZ8_g_yjrE0IoT63YKczjTv5w/exec";
 const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval", "Abhishek"].sort();
 let currentPollBookingId = null;
+let latestBookings = [];
 
 const form = document.getElementById("bookingForm");
 const statusText = document.getElementById("status");
@@ -42,6 +43,7 @@ async function loadAll() {
     const data = await response.json();
     const bookings = (data.bookings || data || []).filter(b => b.id && b.date);
     bookings.sort((a,b) => new Date(a.date) - new Date(b.date));
+    latestBookings = bookings;
     renderBookings(bookings);
     renderPoll(bookings, data.polls || []);
     renderWhatsAppReminder(bookings);
@@ -240,6 +242,48 @@ async function deleteBooking(id) {
   if (!confirm("Delete this booking?")) return;
   const result = await postData({ action: "deleteBooking", id });
   if (result.success) loadAll(); else alert(result.message || "Delete failed.");
+}
+
+async function deletePastBookings() {
+  const deleteStatus = document.getElementById("deletePastStatus");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const pastBookings = (latestBookings || []).filter(booking => {
+    const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
+    return bookingDate < today;
+  });
+
+  if (!pastBookings.length) {
+    if (deleteStatus) deleteStatus.textContent = "No past bookings found.";
+    else alert("No past bookings found.");
+    return;
+  }
+
+  const message = `Delete ${pastBookings.length} past booking${pastBookings.length > 1 ? "s" : ""}? This cannot be undone.`;
+  if (!confirm(message)) return;
+
+  if (deleteStatus) deleteStatus.textContent = "Deleting past bookings...";
+
+  try {
+    const results = await Promise.all(pastBookings.map(booking =>
+      postData({ action: "deleteBooking", id: booking.id })
+    ));
+
+    const failed = results.filter(result => !result.success);
+    if (failed.length) {
+      if (deleteStatus) deleteStatus.textContent = `${failed.length} booking${failed.length > 1 ? "s" : ""} could not be deleted.`;
+      alert(`${failed.length} booking${failed.length > 1 ? "s" : ""} could not be deleted. Please try again.`);
+    } else if (deleteStatus) {
+      deleteStatus.textContent = "Past bookings deleted successfully.";
+    }
+
+    loadAll();
+  } catch (e) {
+    console.error(e);
+    if (deleteStatus) deleteStatus.textContent = "Delete failed. Please try again.";
+    else alert("Delete failed. Please try again.");
+  }
 }
 
 function editBooking(b) {
