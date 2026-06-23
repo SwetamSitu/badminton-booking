@@ -76,3 +76,12 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* v7: WhatsApp reminder card */
+.whatsappReminderCard{border-color:#bbf7d0}
+.whatsappReminderBox{display:grid;gap:12px}
+#whatsappReminderText{min-height:170px;background:#f8fafc;font-size:14px;line-height:1.45}
+.whatsappBtn{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:12px 18px;font-weight:900;text-decoration:none;background:#22c55e;color:#fff;transition:.2s}
+.whatsappBtn:hover{transform:translateY(-1px)}
+@media(max-width:560px){.whatsappBtn{width:100%}}

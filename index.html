@@ -58,6 +58,26 @@
       <div id="pollGrid" class="pollGrid"><p class="muted">No poll loaded yet. Add a future booking or click refresh.</p></div>
     </section>
 
+
+
+    <section id="whatsappReminderCard" class="card whatsappReminderCard">
+      <div class="sectionTitle split">
+        <div>
+          <p class="eyebrow">10 AM Reminder</p>
+          <h2>WhatsApp Vote Reminder</h2>
+          <p id="whatsappReminderMeta" class="muted">A WhatsApp share button will appear here after 10 AM when there is a booking today.</p>
+        </div>
+      </div>
+      <div id="whatsappReminderBox" class="whatsappReminderBox hidden">
+        <textarea id="whatsappReminderText" readonly></textarea>
+        <div class="buttonRow">
+          <a id="whatsappShareBtn" class="whatsappBtn" target="_blank" rel="noopener">Send to WhatsApp Group</a>
+          <button type="button" class="secondary" onclick="copyWhatsAppReminder()">Copy Message</button>
+        </div>
+        <p id="whatsappCopyStatus" class="status"></p>
+      </div>
+    </section>
+
     <section class="grid">
       <section class="card">
         <div class="sectionTitle">

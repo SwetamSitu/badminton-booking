@@ -44,6 +44,7 @@ async function loadAll() {
     bookings.sort((a,b) => new Date(a.date) - new Date(b.date));
     renderBookings(bookings);
     renderPoll(bookings, data.polls || []);
+    renderWhatsAppReminder(bookings);
   } catch (e) {
     cards.innerHTML = `<p class="muted">Could not load bookings. Check your Apps Script Web App URL.</p>`;
     console.error(e);
@@ -166,6 +167,73 @@ async function submitPollVote() {
   } else {
     pollVoteStatus.textContent = result.message || "Could not save vote.";
   }
+}
+
+function renderWhatsAppReminder(bookings) {
+  const meta = document.getElementById("whatsappReminderMeta");
+  const box = document.getElementById("whatsappReminderBox");
+  const textArea = document.getElementById("whatsappReminderText");
+  const shareBtn = document.getElementById("whatsappShareBtn");
+  const copyStatus = document.getElementById("whatsappCopyStatus");
+
+  if (!meta || !box || !textArea || !shareBtn) return;
+  if (copyStatus) copyStatus.textContent = "";
+
+  const now = new Date();
+  const todayIso = now.toLocaleDateString("en-CA");
+  const todayBookings = (bookings || [])
+    .filter(b => toInputDate(b.date) === todayIso)
+    .sort((a, b) => timeRank(a.timing) - timeRank(b.timing));
+
+  if (!todayBookings.length) {
+    box.classList.add("hidden");
+    meta.textContent = "No booking found for today. The WhatsApp reminder button will appear here on booking days after 10 AM.";
+    return;
+  }
+
+  if (now.getHours() < 10) {
+    box.classList.add("hidden");
+    meta.textContent = `There is a booking today. The WhatsApp reminder button will appear after 10 AM.`;
+    return;
+  }
+
+  const reminderText = buildWhatsAppReminderText(todayBookings);
+  textArea.value = reminderText;
+  shareBtn.href = `https://wa.me/?text=${encodeURIComponent(reminderText)}`;
+  meta.textContent = `Reminder ready for today's booking${todayBookings.length > 1 ? "s" : ""}. Tap the button and choose your WhatsApp group.`;
+  box.classList.remove("hidden");
+}
+
+function buildWhatsAppReminderText(bookings) {
+  const siteUrl = "https://swetamsitu.github.io/badminton-booking/";
+  const bookingLines = bookings.map((b, index) => {
+    const prefix = bookings.length > 1 ? `${index + 1}. ` : "";
+    return `${prefix}📅 ${formatDate(b.date)}\n📍 ${b.place}\n🏟️ ${b.court}\n⏰ ${b.timing}\n👤 Booked by: ${b.bookingBy || "-"}`;
+  }).join("\n\n");
+
+  return `🏸 Badminton Availability Reminder\n\nWe have a court booking today. Please vote Yes/No.\n\n${bookingLines}\n\nVote here:\n${siteUrl}`;
+}
+
+async function copyWhatsAppReminder() {
+  const text = document.getElementById("whatsappReminderText")?.value || "";
+  const status = document.getElementById("whatsappCopyStatus");
+  if (!text) return;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    if (status) status.textContent = "Message copied.";
+  } catch (e) {
+    if (status) status.textContent = "Could not copy automatically. Please select the text and copy it manually.";
+  }
+}
+
+function timeRank(timing) {
+  const text = String(timing || "").toUpperCase();
+  if (text.includes("6-7")) return 1;
+  if (text.includes("7-8")) return 2;
+  if (text.includes("8-9")) return 3;
+  const hour = Number((text.match(/\d{1,2}/) || [99])[0]);
+  return Number.isFinite(hour) ? hour : 99;
 }
 
 async function deleteBooking(id) {
