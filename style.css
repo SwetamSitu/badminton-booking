@@ -85,3 +85,67 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
 .whatsappBtn{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:12px 18px;font-weight:900;text-decoration:none;background:#22c55e;color:#fff;transition:.2s}
 .whatsappBtn:hover{transform:translateY(-1px)}
 @media(max-width:560px){.whatsappBtn{width:100%}}
+
+/* v8: Fixed desktop alignment for Daily Poll vote controls */
+@media (min-width: 801px){
+  .pollVoteBox{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto auto auto;
+    gap: 10px 12px;
+    align-items: end;
+  }
+
+  .pollVoteBox label[for="pollPlayer"]{
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  #pollPlayer{
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .pollVoteBox .voteChoice{
+    grid-column: 2 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .pollVoteBox button{
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100%;
+    max-width: none;
+  }
+
+  #pollVoteStatus{
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin: 0;
+  }
+}
+
+/* Keep the vote controls comfortable on medium-width screens */
+@media (min-width: 801px) and (max-width: 980px){
+  .pollVoteBox{
+    grid-template-columns: 1fr;
+  }
+
+  #pollPlayer,
+  .pollVoteBox .voteChoice,
+  .pollVoteBox button,
+  #pollVoteStatus{
+    grid-column: 1;
+  }
+
+  .pollVoteBox .voteChoice{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
