@@ -189,13 +189,13 @@ function renderWhatsAppReminder(bookings) {
 
   if (!todayBookings.length) {
     box.classList.add("hidden");
-    meta.textContent = "No booking found for today. The WhatsApp reminder button will appear here on booking days after 10 AM.";
+    meta.textContent = "No booking found for today. The WhatsApp reminder button will appear here on booking days after 7 AM.";
     return;
   }
 
-  if (now.getHours() < 10) {
+  if (now.getHours() < 7) {
     box.classList.add("hidden");
-    meta.textContent = `There is a booking today. The WhatsApp reminder button will appear after 10 AM.`;
+    meta.textContent = `There is a booking today. The WhatsApp reminder button will appear after 7 AM.`;
     return;
   }
 
