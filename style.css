@@ -149,3 +149,11 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
   }
 }
 
+
+/* v9: Make Daily Poll card use the same width as the other desktop cards */
+@media (min-width: 801px){
+  .pollCard{
+    max-width: none;
+    width: 100%;
+  }
+}
