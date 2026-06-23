@@ -79,7 +79,7 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
 
 
 /* v7: WhatsApp reminder card */
-.whatsappReminderCard{border-color:#fed7aa;background:#fffaf5}
+.whatsappReminderCard{border-color:#fed7aa;background:#fed7aa}
 .whatsappReminderBox{display:grid;gap:12px}
 #whatsappReminderText{min-height:170px;border-color:#fed7aa;font-size:14px;line-height:1.45}
 .whatsappBtn{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:12px 18px;font-weight:900;text-decoration:none;background:linear-gradient(135deg,#ff8a00,#ffb347);color:#fff;border:none;transition:.2s}
