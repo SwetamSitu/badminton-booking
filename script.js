@@ -4,6 +4,12 @@ const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Uj
 let currentPollBookingId = null;
 let latestBookings = [];
 
+function showPage(pageId) {
+  document.querySelectorAll(".appPage").forEach(page => page.classList.toggle("active", page.id === pageId));
+  document.querySelectorAll(".tabBtn").forEach(button => button.classList.toggle("active", button.dataset.page === pageId));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 const form = document.getElementById("bookingForm");
 const statusText = document.getElementById("status");
 const cards = document.getElementById("bookingCards");
@@ -297,7 +303,7 @@ function editBooking(b) {
   customTiming.value = knownTiming ? "" : b.timing;
   document.getElementById("court").value = b.court;
   document.getElementById("notes").value = b.notes || "";
-  scrollTo({ top: 0, behavior: "smooth" });
+  showPage("managePage");
 }
 
 function resetForm(){ form.reset(); document.getElementById("id").value=""; customTiming.classList.add("hidden"); }
@@ -330,6 +336,7 @@ function fillFromParsed(b) {
   customTiming.value = knownTiming ? "" : b.timing;
   document.getElementById("court").value = b.court;
   document.getElementById("notes").value = "Added from screenshot";
+  showPage("managePage");
 }
 
 function parseBookingScreenshot(text) {

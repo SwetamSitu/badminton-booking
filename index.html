@@ -12,11 +12,18 @@
       <div>
         <p class="eyebrow">Full Gardaa Badminton Group</p>
         <h1>Court Bookings</h1>
-        <p class="subtext">Anyone can view, add, edit, or delete bookings, vote in availability polls, and create bookings manually or by uploading a screenshot.</p>
+        <p class="subtext">Vote in the daily poll, share WhatsApp reminders, add bookings, and manage the live booking list.</p>
       </div>
     </section>
 
-    <section id="pollCard" class="card pollCard">
+    <nav class="pageTabs" aria-label="Booking app sections">
+      <button type="button" class="tabBtn active" data-page="homePage" onclick="showPage('homePage')">🏠 Home</button>
+      <button type="button" class="tabBtn" data-page="managePage" onclick="showPage('managePage')">➕ Add Booking</button>
+      <button type="button" class="tabBtn" data-page="listPage" onclick="showPage('listPage')">📋 Live List</button>
+    </nav>
+
+    <section id="homePage" class="appPage active">
+      <section id="pollCard" class="card pollCard">
       <div class="sectionTitle split">
         <div>
           <p class="eyebrow">Daily Poll</p>
@@ -78,7 +85,10 @@
       </div>
     </section>
 
-    <section class="grid">
+    </section>
+
+    <section id="managePage" class="appPage">
+      <section class="grid">
       <section class="card">
         <div class="sectionTitle">
           <div>
@@ -147,10 +157,13 @@
       </section>
     </section>
 
-    <section class="card">
-      <div class="sectionTitle split">
-        <div>
-          <p class="eyebrow">Live List</p>
+    </section>
+
+    <section id="listPage" class="appPage">
+      <section class="card">
+        <div class="sectionTitle split">
+          <div>
+            <p class="eyebrow">Live List</p>
           <h2>Current Bookings</h2><p class="muted">Dates are shown as DD-MON-YY. Use Edit/Delete from each booking card.</p>
         </div>
         <div class="buttonRow liveListActions">
@@ -159,7 +172,8 @@
         </div>
       </div>
       <p id="deletePastStatus" class="status"></p>
-      <div id="bookingCards" class="bookingCards"></div>
+        <div id="bookingCards" class="bookingCards"></div>
+      </section>
     </section>
   </main>
 
