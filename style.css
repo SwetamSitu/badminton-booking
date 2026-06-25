@@ -663,3 +663,241 @@ body.helpOpen{overflow:hidden;}
     font-size:14px !important;
   }
 }
+
+/* v1.2 Mobile professional UI polish - keeps existing colour palette */
+@media (max-width: 640px){
+  html{scroll-behavior:smooth;}
+  body{
+    background:linear-gradient(180deg,#fff7ed 0,#f7f8fb 210px) !important;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    padding:10px 10px calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .hero{
+    margin:6px 0 12px !important;
+    padding:20px 18px !important;
+    border-radius:24px !important;
+    box-shadow:0 12px 28px rgba(194,65,12,.16) !important;
+  }
+  .hero h1{
+    font-size:34px !important;
+    line-height:1.02 !important;
+    letter-spacing:-.04em;
+    margin:6px 0 10px !important;
+  }
+  .hero .subtext{
+    font-size:15px !important;
+    line-height:1.38 !important;
+    margin:0;
+  }
+  .eyebrow{
+    font-size:11px !important;
+    letter-spacing:.16em !important;
+  }
+
+  .pageTabs{
+    position:sticky !important;
+    top:8px !important;
+    z-index:50 !important;
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:6px !important;
+    padding:6px !important;
+    margin:0 0 12px !important;
+    border-radius:20px !important;
+    background:rgba(255,255,255,.92) !important;
+    box-shadow:0 10px 26px rgba(17,24,39,.08) !important;
+    backdrop-filter:blur(14px) !important;
+  }
+  .tabBtn{
+    min-height:42px !important;
+    padding:9px 6px !important;
+    border-radius:15px !important;
+    font-size:12px !important;
+    line-height:1.1 !important;
+    white-space:nowrap !important;
+  }
+
+  .card{
+    padding:16px !important;
+    border-radius:22px !important;
+    margin-bottom:14px !important;
+    box-shadow:0 12px 30px rgba(17,24,39,.07) !important;
+  }
+  .sectionTitle{
+    gap:10px !important;
+    margin-bottom:14px !important;
+  }
+  .sectionTitle h2{
+    font-size:24px !important;
+    line-height:1.12 !important;
+    letter-spacing:-.03em;
+  }
+  .sectionTitle .muted,
+  .muted{
+    font-size:15px !important;
+    line-height:1.35 !important;
+  }
+
+  input,select,textarea{
+    min-height:50px !important;
+    border-radius:16px !important;
+    padding:13px 15px !important;
+    font-size:16px !important;
+  }
+  textarea{min-height:96px !important;}
+  form{gap:12px !important;}
+  label{font-size:14px !important;}
+  button,.whatsappBtn{
+    min-height:46px !important;
+    border-radius:16px !important;
+    font-size:15px !important;
+  }
+
+  .radioGroup{
+    gap:10px !important;
+  }
+  .radioGroup label{
+    min-height:52px !important;
+    border-radius:16px !important;
+    padding:13px 14px !important;
+  }
+
+  .pollCard .sectionTitle{
+    padding-right:96px !important;
+  }
+  .pollRefreshBtn{
+    min-height:38px !important;
+    padding:8px 12px !important;
+    font-size:12px !important;
+    box-shadow:0 8px 18px rgba(194,65,12,.12) !important;
+  }
+  .pollSummary{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+    margin:12px 0 !important;
+  }
+  .summaryCard{
+    min-height:72px !important;
+    padding:12px 14px !important;
+    border-radius:18px !important;
+  }
+  .summaryCard strong{
+    font-size:28px !important;
+  }
+
+  .pollVoteBox{
+    padding:14px !important;
+    gap:12px !important;
+    border-radius:20px !important;
+    margin:12px 0 14px !important;
+  }
+  .voteChoice{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+  }
+  .choice{
+    min-height:54px !important;
+    padding:12px !important;
+    border-radius:16px !important;
+  }
+  #pollVoteStatus:empty{display:none !important;}
+
+  .pollResultLists{
+    gap:12px !important;
+  }
+  .resultList{
+    border-radius:20px !important;
+    padding:15px !important;
+    min-height:108px !important;
+  }
+  .resultList h3{
+    font-size:17px !important;
+    margin-bottom:12px !important;
+  }
+  .nameChip{
+    padding:8px 12px !important;
+    font-size:13px !important;
+  }
+
+  .whatsappReminderCard .sectionTitle h2{
+    font-size:24px !important;
+  }
+  .whatsappReminderCard{
+    margin-bottom:16px !important;
+  }
+
+  .liveListActions{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  .liveRefreshBtn,
+  .liveListActions .danger{
+    width:100% !important;
+  }
+  .bookingCards{
+    gap:12px !important;
+  }
+  .booking{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    padding:16px !important;
+    border-radius:20px !important;
+    box-shadow:0 8px 22px rgba(17,24,39,.04) !important;
+  }
+  .datePill{
+    font-size:22px !important;
+    letter-spacing:-.02em;
+  }
+  .timePill{
+    font-size:14px !important;
+  }
+  .booking h3{
+    font-size:19px !important;
+    line-height:1.2 !important;
+  }
+  .meta{
+    gap:7px !important;
+  }
+  .chip{
+    font-size:12px !important;
+    padding:6px 9px !important;
+  }
+  .actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    width:100% !important;
+  }
+  .actions button{
+    width:100% !important;
+  }
+
+  .helpFloatingBtn{
+    height:44px !important;
+    min-width:98px !important;
+    max-width:116px !important;
+    right:12px !important;
+    bottom:12px !important;
+    font-size:14px !important;
+  }
+  .appFooter{
+    padding:12px 90px 6px 8px !important;
+    font-size:12px !important;
+    text-align:left !important;
+  }
+}
+
+@media (max-width: 370px){
+  .hero h1{font-size:31px !important;}
+  .tabBtn{font-size:11px !important;padding:8px 4px !important;}
+  .sectionTitle h2{font-size:22px !important;}
+  .pollCard .sectionTitle{padding-right:88px !important;}
+  .pollRefreshBtn{padding:7px 10px !important;}
+}
