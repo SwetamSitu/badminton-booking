@@ -955,3 +955,102 @@ body.helpOpen{overflow:hidden;}
     padding:14px !important;
   }
 }
+
+/* v1.4: Duplicate prevention + professional delete confirmation popup */
+body.modalOpen{
+  overflow:hidden;
+}
+
+.confirmOverlay{
+  position:fixed;
+  inset:0;
+  z-index:1400;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(17,24,39,.46);
+  backdrop-filter:blur(8px);
+}
+
+.confirmDialog{
+  width:min(440px,100%);
+  background:rgba(255,255,255,.98);
+  border:1px solid #fed7aa;
+  border-radius:26px;
+  padding:24px;
+  box-shadow:0 26px 70px rgba(17,24,39,.25);
+  animation:confirmPop .18s ease-out;
+}
+
+.confirmIcon{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#c2410c;
+  font-weight:950;
+  font-size:22px;
+  margin-bottom:14px;
+}
+
+.confirmDialog h2{
+  margin:0 0 8px;
+  font-size:24px;
+  line-height:1.1;
+}
+
+.confirmDialog p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.5;
+  white-space:pre-line;
+}
+
+.confirmActions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:22px;
+}
+
+.confirmActions button{
+  min-width:118px;
+}
+
+.primaryConfirm{
+  background:linear-gradient(135deg,#ff8a00,#ffb347);
+  color:#fff;
+}
+
+@keyframes confirmPop{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@media(max-width:560px){
+  .confirmOverlay{
+    align-items:flex-end;
+    padding:14px;
+  }
+
+  .confirmDialog{
+    border-radius:24px;
+    padding:20px;
+  }
+
+  .confirmDialog h2{
+    font-size:22px;
+  }
+
+  .confirmActions{
+    flex-direction:column-reverse;
+  }
+
+  .confirmActions button{
+    width:100%;
+  }
+}

@@ -36,6 +36,24 @@ form.addEventListener("submit", async (event) => {
     court: document.getElementById("court").value,
     notes: document.getElementById("notes").value.trim()
   };
+
+  setStatus("Checking for duplicate booking...");
+  await ensureLatestBookings();
+  const duplicate = findDuplicateBooking(booking);
+  if (duplicate) {
+    const duplicateText = `${formatDate(duplicate.date)} • ${duplicate.place} • ${duplicate.court} • ${duplicate.timing}`;
+    setStatus("Duplicate booking found. Please update the existing booking instead.");
+    await showAlertDialog(
+      "Duplicate booking found",
+      `This slot already exists:
+
+${duplicateText}
+
+Please edit the existing booking or choose a different date, time, place, or court.`
+    );
+    return;
+  }
+
   setStatus("Saving...");
   const result = await postData(booking);
   if (result.success) { setStatus("Booking saved successfully."); resetForm(); loadAll(); }
@@ -245,7 +263,21 @@ function timeRank(timing) {
 }
 
 async function deleteBooking(id) {
-  if (!confirm("Delete this booking?")) return;
+  const booking = (latestBookings || []).find(item => String(item.id) === String(id));
+  const bookingText = booking
+    ? `${formatDate(booking.date)} • ${booking.place} • ${booking.court} • ${booking.timing}`
+    : "this booking";
+
+  const confirmed = await showConfirmDialog({
+    title: "Delete booking?",
+    message: `Are you sure you want to delete ${bookingText}? This action cannot be undone.`,
+    confirmText: "Yes, Delete",
+    cancelText: "Cancel",
+    danger: true
+  });
+
+  if (!confirmed) return;
+
   const result = await postData({ action: "deleteBooking", id });
   if (result.success) loadAll(); else alert(result.message || "Delete failed.");
 }
@@ -266,8 +298,15 @@ async function deletePastBookings() {
     return;
   }
 
-  const message = `Delete ${pastBookings.length} past booking${pastBookings.length > 1 ? "s" : ""}? This cannot be undone.`;
-  if (!confirm(message)) return;
+  const confirmed = await showConfirmDialog({
+    title: "Delete past bookings?",
+    message: `You are about to delete ${pastBookings.length} past booking${pastBookings.length > 1 ? "s" : ""}. This action cannot be undone.`,
+    confirmText: "Delete Past Bookings",
+    cancelText: "Cancel",
+    danger: true
+  });
+
+  if (!confirmed) return;
 
   if (deleteStatus) deleteStatus.textContent = "Deleting past bookings...";
 
@@ -290,6 +329,113 @@ async function deletePastBookings() {
     if (deleteStatus) deleteStatus.textContent = "Delete failed. Please try again.";
     else alert("Delete failed. Please try again.");
   }
+}
+
+function normalizeBookingPart(value) {
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
+}
+
+function bookingSignature(booking) {
+  return [
+    toInputDate(booking.date),
+    normalizeBookingPart(booking.place),
+    normalizeBookingPart(booking.timing),
+    normalizeBookingPart(booking.court)
+  ].join("|");
+}
+
+function findDuplicateBooking(booking) {
+  const currentSignature = bookingSignature(booking);
+  if (!currentSignature || currentSignature.includes("||")) return null;
+
+  return (latestBookings || []).find(existing => {
+    if (!existing || !existing.id) return false;
+    if (String(existing.id) === String(booking.id)) return false;
+    return bookingSignature(existing) === currentSignature;
+  }) || null;
+}
+
+async function ensureLatestBookings() {
+  try {
+    const response = await fetch(`${API_URL}?action=getAll`);
+    const data = await response.json();
+    latestBookings = (data.bookings || data || []).filter(b => b.id && b.date);
+  } catch (error) {
+    console.warn("Could not refresh bookings before duplicate check. Using currently loaded bookings.", error);
+  }
+
+  return latestBookings || [];
+}
+
+let activeConfirmDialog = null;
+
+function showAlertDialog(title, message) {
+  return showConfirmDialog({
+    title,
+    message,
+    confirmText: "OK",
+    showCancel: false,
+    danger: false
+  });
+}
+
+function showConfirmDialog({
+  title = "Are you sure?",
+  message = "Please confirm this action.",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  danger = false,
+  showCancel = true
+} = {}) {
+  const overlay = document.getElementById("confirmOverlay");
+  const titleEl = document.getElementById("confirmTitle");
+  const messageEl = document.getElementById("confirmMessage");
+  const confirmBtn = document.getElementById("confirmActionBtn");
+  const cancelBtn = document.getElementById("confirmCancelBtn");
+
+  if (!overlay || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+    return Promise.resolve(window.confirm(message));
+  }
+
+  return new Promise(resolve => {
+    const close = result => {
+      overlay.classList.add("hidden");
+      document.body.classList.remove("modalOpen");
+      confirmBtn.removeEventListener("click", onConfirm);
+      cancelBtn.removeEventListener("click", onCancel);
+      overlay.removeEventListener("click", onOverlayClick);
+      activeConfirmDialog = null;
+      resolve(result);
+    };
+
+    const onConfirm = () => close(true);
+    const onCancel = () => close(false);
+    const onOverlayClick = event => {
+      if (event.target === overlay) close(false);
+    };
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    confirmBtn.textContent = confirmText;
+    cancelBtn.textContent = cancelText;
+
+    confirmBtn.classList.toggle("danger", danger);
+    confirmBtn.classList.toggle("primaryConfirm", !danger);
+    cancelBtn.classList.toggle("hidden", !showCancel);
+
+    confirmBtn.addEventListener("click", onConfirm);
+    cancelBtn.addEventListener("click", onCancel);
+    overlay.addEventListener("click", onOverlayClick);
+
+    overlay.classList.remove("hidden");
+    document.body.classList.add("modalOpen");
+    activeConfirmDialog = { close };
+    setTimeout(() => confirmBtn.focus(), 0);
+  });
+}
+
+function closeActiveConfirmDialog(result = false) {
+  if (activeConfirmDialog) activeConfirmDialog.close(result);
 }
 
 function editBooking(b) {
@@ -408,7 +554,10 @@ function closeHelpPanel() {
 }
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeHelpPanel();
+  if (event.key === "Escape") {
+    closeHelpPanel();
+    closeActiveConfirmDialog(false);
+  }
 });
 
 

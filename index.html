@@ -86,6 +86,10 @@
             <p>Yes. Anyone with the link can update bookings, so please edit or delete carefully.</p>
           </details>
           <details>
+            <summary>Why can't I save the booking?</summary>
+            <p>The site prevents duplicate bookings for the same date, place, time, and court. Edit the existing booking or choose a different slot.</p>
+          </details>
+          <details>
             <summary>Why is my screenshot not detected?</summary>
             <p>Use a clear screenshot where date, time, court, and venue are visible. If OCR fails, add the booking manually.</p>
           </details>
@@ -254,6 +258,19 @@
     <footer class="appFooter">Made with ❤️ by Swetam Meher</footer>
   </main>
 
+
+
+  <div id="confirmOverlay" class="confirmOverlay hidden" aria-hidden="true">
+    <div class="confirmDialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+      <div class="confirmIcon" aria-hidden="true">!</div>
+      <h2 id="confirmTitle">Confirm action</h2>
+      <p id="confirmMessage">Please confirm this action.</p>
+      <div class="confirmActions">
+        <button type="button" id="confirmCancelBtn" class="secondary">Cancel</button>
+        <button type="button" id="confirmActionBtn" class="danger">Confirm</button>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="script.js"></script>
 </body>
