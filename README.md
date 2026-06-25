@@ -18,7 +18,7 @@ https://fullgardaa-badminton.rweb.site/
 - Prevent duplicate active bookings for the same date, place, time, and court.
 - Vote Yes or No in the daily availability poll.
 - See who is available and not available.
-- Generate a WhatsApp reminder message for today's booking.
+- Generate a WhatsApp reminder message when there is a booking today.
 - Copy or share the WhatsApp reminder with the group.
 - Use the site comfortably on mobile and desktop.
 
@@ -26,7 +26,7 @@ https://fullgardaa-badminton.rweb.site/
 
 ### Dashboard
 
-The Dashboard shows today's or the next upcoming availability poll. Players can select their name, choose Yes or No, and submit their vote.
+The Dashboard shows the next upcoming active booking availability poll. Players can select their name, choose Yes or No, and submit their vote.
 
 ### New Booking
 

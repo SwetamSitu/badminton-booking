@@ -153,13 +153,15 @@ function renderPoll(bookings, polls) {
   const pollSummary = document.getElementById("pollSummary");
   const pollVoteBox = document.getElementById("pollVoteBox");
   const pollResultLists = document.getElementById("pollResultLists");
+  const pollEyebrow = document.getElementById("pollEyebrow");
 
   pollCard.classList.remove("hidden");
 
   if (!next) {
     currentPollBookingId = null;
-    pollTitle.textContent = "Today's Availability";
-    pollMeta.textContent = "No future booking found. Add a future booking and the poll will appear here automatically.";
+    if (pollEyebrow) pollEyebrow.textContent = "🏸 Next Availability";
+    pollTitle.textContent = "Next Availability";
+    pollMeta.textContent = "No future active booking found. Add a future booking and the poll will appear here automatically.";
     pollSummary.classList.add("hidden");
     pollVoteBox.classList.add("hidden");
     pollResultLists.classList.add("hidden");
@@ -167,8 +169,13 @@ function renderPoll(bookings, polls) {
     return;
   }
 
+  const nextDate = new Date(toInputDate(next.date) + "T00:00:00");
+  const isTodayPoll = nextDate.getTime() === today.getTime();
+  const availabilityLabel = isTodayPoll ? "Today's Availability" : "Next Availability";
+
   currentPollBookingId = next.id;
-  pollTitle.textContent = `Today's Availability • ${formatDate(next.date)}`;
+  if (pollEyebrow) pollEyebrow.textContent = `🏸 ${availabilityLabel}`;
+  pollTitle.textContent = `${availabilityLabel} • ${formatDate(next.date)}`;
   pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
 
   const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
