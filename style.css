@@ -460,3 +460,103 @@ body.helpOpen{overflow:hidden;}
   .helpHeader{padding:18px 18px 14px;}
   .helpContent{padding:14px 16px 24px;}
 }
+
+/* vHelpFix: robust mobile help drawer so it does not break the page layout */
+.helpFloatingBtn{
+  position:fixed !important;
+  right:22px !important;
+  bottom:22px !important;
+  z-index:120 !important;
+}
+.helpOverlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:130 !important;
+}
+.helpPanel{
+  position:fixed !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:auto !important;
+  width:min(430px,92vw) !important;
+  height:100dvh !important;
+  z-index:140 !important;
+  transform:translateX(110%) !important;
+  visibility:hidden;
+  pointer-events:none;
+}
+.helpPanel.open{
+  transform:translateX(0) !important;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+@media(max-width:640px){
+  .helpFloatingBtn{
+    right:14px !important;
+    bottom:14px !important;
+    padding:11px 14px !important;
+    border-radius:999px !important;
+    box-shadow:0 12px 28px rgba(17,24,39,.18) !important;
+  }
+
+  .helpPanel{
+    top:8px !important;
+    right:8px !important;
+    bottom:8px !important;
+    left:8px !important;
+    width:auto !important;
+    height:auto !important;
+    max-height:calc(100dvh - 16px) !important;
+    border:1px solid #fed7aa !important;
+    border-radius:24px !important;
+    transform:translateY(110%) !important;
+    overflow:hidden !important;
+  }
+
+  .helpPanel.open{
+    transform:translateY(0) !important;
+  }
+
+  .helpHeader{
+    position:sticky !important;
+    top:0 !important;
+    z-index:2 !important;
+    align-items:center !important;
+    padding:16px !important;
+  }
+
+  .helpHeader h2{
+    font-size:20px !important;
+    line-height:1.15 !important;
+  }
+
+  .helpCloseBtn{
+    flex:0 0 38px !important;
+    width:38px !important;
+    height:38px !important;
+    min-width:38px !important;
+  }
+
+  .helpContent{
+    padding:14px 14px 22px !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+
+  .helpBlock{
+    padding:14px !important;
+    border-radius:16px !important;
+  }
+
+  body.helpOpen .app{
+    pointer-events:none;
+  }
+
+  body.helpOpen .helpPanel,
+  body.helpOpen .helpOverlay,
+  body.helpOpen .helpFloatingBtn{
+    pointer-events:auto;
+  }
+}
