@@ -564,7 +564,9 @@ body.helpOpen{overflow:hidden;}
 
 /* Refresh loading animation */
 .pollRefreshBtn.isLoading,
-.pollRefreshBtn:disabled{
+.liveRefreshBtn.isLoading,
+.pollRefreshBtn:disabled,
+.liveRefreshBtn:disabled{
   opacity:.78;
   cursor:not-allowed;
   pointer-events:none;
@@ -582,4 +584,13 @@ body.helpOpen{overflow:hidden;}
 
 @keyframes refreshSpin{
   to{ transform:rotate(360deg); }
+}
+
+
+.pollRefreshBtn,
+.liveRefreshBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
