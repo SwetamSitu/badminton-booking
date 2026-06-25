@@ -59,26 +59,6 @@ async function loadAll() {
   }
 }
 
-
-async function refreshAll(button) {
-  const originalText = button ? button.innerHTML : "";
-  if (button) {
-    button.disabled = true;
-    button.classList.add("loading");
-    button.innerHTML = `<span class="spinner" aria-hidden="true"></span> Updating...`;
-  }
-
-  try {
-    await loadAll();
-  } finally {
-    if (button) {
-      button.classList.remove("loading");
-      button.disabled = false;
-      button.innerHTML = originalText || "↻ Refresh";
-    }
-  }
-}
-
 function renderBookings(bookings) {
   if (!bookings.length) { cards.innerHTML = `<p class="muted">No bookings yet.</p>`; return; }
   cards.innerHTML = bookings.map(b => `
@@ -384,5 +364,31 @@ function toInputDate(value){ if(!value)return""; if(/^\d{4}-\d{2}-\d{2}$/.test(v
 function escapeHtml(v){ return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 function escapeAttr(v){ return escapeHtml(v).replaceAll('"', '&quot;'); }
 function safeJson(obj){ return JSON.stringify(obj).replaceAll("<","\\u003c").replaceAll("'","&#39;"); }
+
+
+function openHelpPanel() {
+  const panel = document.getElementById("helpPanel");
+  const overlay = document.getElementById("helpOverlay");
+  if (!panel || !overlay) return;
+  panel.classList.add("open");
+  panel.setAttribute("aria-hidden", "false");
+  overlay.classList.remove("hidden");
+  document.body.classList.add("helpOpen");
+}
+
+function closeHelpPanel() {
+  const panel = document.getElementById("helpPanel");
+  const overlay = document.getElementById("helpOverlay");
+  if (!panel || !overlay) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  overlay.classList.add("hidden");
+  document.body.classList.remove("helpOpen");
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeHelpPanel();
+});
+
 
 loadAll();

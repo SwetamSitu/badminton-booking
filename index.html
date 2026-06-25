@@ -22,6 +22,82 @@
       <button type="button" class="tabBtn" data-page="listPage" onclick="showPage('listPage')">📋 Live List</button>
     </nav>
 
+
+
+    <button type="button" class="helpFloatingBtn" onclick="openHelpPanel()" aria-label="Open help section">❔ Help</button>
+
+    <div id="helpOverlay" class="helpOverlay hidden" onclick="closeHelpPanel()"></div>
+    <aside id="helpPanel" class="helpPanel" aria-hidden="true" aria-label="Help and FAQ section">
+      <div class="helpHeader">
+        <div>
+          <p class="eyebrow">Help Centre</p>
+          <h2>How to use this site</h2>
+        </div>
+        <button type="button" class="helpCloseBtn" onclick="closeHelpPanel()" aria-label="Close help section">×</button>
+      </div>
+
+      <div class="helpContent">
+        <section class="helpBlock">
+          <h3>Quick Start</h3>
+          <ol>
+            <li>Open the <strong>Home</strong> tab to check the daily poll and WhatsApp reminder.</li>
+            <li>Use <strong>Add Booking</strong> to add a court manually or from a screenshot.</li>
+            <li>Use <strong>Live List</strong> to view, edit, or delete bookings.</li>
+          </ol>
+        </section>
+
+        <section class="helpBlock">
+          <h3>How to vote</h3>
+          <ol>
+            <li>Select your name from the poll dropdown.</li>
+            <li>Choose <strong>Yes</strong> or <strong>No</strong>.</li>
+            <li>Tap <strong>Submit Vote</strong>.</li>
+          </ol>
+          <p class="helpNote">You can change your vote later by selecting your name again and submitting a new response.</p>
+        </section>
+
+        <section class="helpBlock">
+          <h3>How to add a booking</h3>
+          <ol>
+            <li>Go to <strong>Add Booking</strong>.</li>
+            <li>Select booking person, place, date, time, and court.</li>
+            <li>Add optional notes and tap <strong>Save Booking</strong>.</li>
+          </ol>
+        </section>
+
+        <section class="helpBlock">
+          <h3>Screenshot upload</h3>
+          <p>Upload a booking screenshot from the Places Leisure app. The site will try to read the date, time, court, and place, then fill the form for you.</p>
+        </section>
+
+        <section class="helpBlock">
+          <h3>WhatsApp reminder</h3>
+          <p>If there is a booking today, the reminder card will show a ready-made WhatsApp message and a <strong>Send to WhatsApp Group</strong> button after the reminder time.</p>
+        </section>
+
+        <section class="helpBlock faq">
+          <h3>FAQ</h3>
+          <details open>
+            <summary>Why can't I see the latest booking?</summary>
+            <p>Tap <strong>Refresh</strong>. If it still does not update, close and reopen the page.</p>
+          </details>
+          <details>
+            <summary>Can anyone edit or delete a booking?</summary>
+            <p>Yes. Anyone with the link can update bookings, so please edit or delete carefully.</p>
+          </details>
+          <details>
+            <summary>Why is my screenshot not detected?</summary>
+            <p>Use a clear screenshot where date, time, court, and venue are visible. If OCR fails, add the booking manually.</p>
+          </details>
+          <details>
+            <summary>Can I vote again?</summary>
+            <p>Yes. Select your name and submit again. Your latest vote will be used.</p>
+          </details>
+        </section>
+      </div>
+    </aside>
+
+
     <section id="homePage" class="appPage active">
       <section id="pollCard" class="card pollCard">
       <div class="sectionTitle split">
@@ -30,7 +106,7 @@
           <h2 id="pollTitle">Next booking availability</h2>
           <p id="pollMeta" class="muted">Poll will appear here for the next upcoming booking.</p>
         </div>
-        <button type="button" class="pollRefreshBtn" onclick="refreshAll(this)">↻ Refresh</button>
+        <button type="button" class="pollRefreshBtn" onclick="loadAll()">↻ Refresh</button>
       </div>
       <div id="pollSummary" class="pollSummary hidden">
         <div class="summaryCard yesCard"><span>Yes</span><strong id="yesCount">0</strong></div>
@@ -167,7 +243,7 @@
           <h2>Current Bookings</h2><p class="muted">Dates are shown as DD-MON-YY. Use Edit/Delete from each booking card.</p>
         </div>
         <div class="buttonRow liveListActions">
-          <button class="secondary" onclick="refreshAll(this)">Refresh</button>
+          <button class="secondary" onclick="loadAll()">Refresh</button>
           <button class="danger" onclick="deletePastBookings()">Delete Past Bookings</button>
         </div>
       </div>
