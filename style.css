@@ -1054,3 +1054,12 @@ body.modalOpen{
     width:100%;
   }
 }
+
+/* v1.6: Clean page background fix
+   Keep the orange palette on the hero/buttons only, and stop the empty desktop area
+   below the app from showing the warm orange gradient. */
+html,
+body{
+  background:#f7f8fb !important;
+  min-height:100%;
+}
