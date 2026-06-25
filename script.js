@@ -231,7 +231,7 @@ function renderWhatsAppReminder(bookings) {
 }
 
 function buildWhatsAppReminderText(bookings) {
-  const siteUrl = "https://swetamsitu.github.io/badminton-booking/";
+  const siteUrl = "https://fullgardaa-badminton.rweb.site/";
   const bookingLines = bookings.map((b, index) => {
     const prefix = bookings.length > 1 ? `${index + 1}. ` : "";
     return `${prefix}📅 ${formatDate(b.date)}\n📍 ${b.place}\n🏟️ ${b.court}\n⏰ ${b.timing}\n👤 Booked by: ${b.bookingBy || "-"}`;

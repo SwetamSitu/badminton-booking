@@ -4,7 +4,7 @@ A simple shared badminton booking portal for the Full Gardaa Badminton Group.
 
 Live site:
 
-https://swetamsitu.github.io/badminton-booking/
+https://fullgardaa-badminton.rweb.site/
 
 ## What this site does
 
