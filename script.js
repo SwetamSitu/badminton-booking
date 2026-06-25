@@ -120,7 +120,7 @@ function renderBookings(bookings) {
   }
 
   cards.innerHTML = visibleBookings.map(b => {
-    const status = normalizeStatus(b.status);
+    const status = getDisplayStatus(b);
     const archiveReason = getArchiveReason(b);
     const isArchive = bookingListView === "archive";
     return `
@@ -388,24 +388,44 @@ function normalizeStatus(status) {
   return "Active";
 }
 
+function getBookingDateOnly(booking) {
+  const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
+  bookingDate.setHours(0, 0, 0, 0);
+  return bookingDate;
+}
+
+function getTodayOnly() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+function isPastBooking(booking) {
+  return getBookingDateOnly(booking) < getTodayOnly();
+}
+
+function getDisplayStatus(booking) {
+  const status = normalizeStatus(booking.status);
+  if (status === "Cancelled") return "Cancelled";
+  if (status === "Completed") return "Completed";
+  return isPastBooking(booking) ? "Completed" : "Active";
+}
+
 function isActiveBooking(booking) {
-  return normalizeStatus(booking.status) === "Active";
+  return getDisplayStatus(booking) === "Active";
 }
 
 function isArchivedBooking(booking) {
-  const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return bookingDate < today || normalizeStatus(booking.status) !== "Active";
+  return isPastBooking(booking) || normalizeStatus(booking.status) !== "Active";
 }
 
 function getArchiveReason(booking) {
-  const status = normalizeStatus(booking.status);
-  if (status !== "Active") return status;
-  const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return bookingDate < today ? "Past booking" : "";
+  const savedStatus = normalizeStatus(booking.status);
+  const displayStatus = getDisplayStatus(booking);
+
+  if (bookingListView !== "archive") return "";
+  if (savedStatus === "Active" && displayStatus === "Completed") return "Auto-archived";
+  return "";
 }
 
 function normalizeBookingPart(value) {
