@@ -560,3 +560,26 @@ body.helpOpen{overflow:hidden;}
     pointer-events:auto;
   }
 }
+
+
+/* Refresh loading animation */
+.pollRefreshBtn.isLoading,
+.pollRefreshBtn:disabled{
+  opacity:.78;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.refreshSpinner{
+  width:14px;
+  height:14px;
+  border:2px solid currentColor;
+  border-top-color:transparent;
+  border-radius:50%;
+  display:inline-block;
+  animation:refreshSpin .75s linear infinite;
+}
+
+@keyframes refreshSpin{
+  to{ transform:rotate(360deg); }
+}

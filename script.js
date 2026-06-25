@@ -391,4 +391,27 @@ document.addEventListener("keydown", (event) => {
 });
 
 
+async function refreshPollWithLoading(button) {
+  const refreshButton = button || document.querySelector(".pollRefreshBtn");
+  if (!refreshButton) {
+    await loadAll();
+    return;
+  }
+
+  const originalHtml = refreshButton.innerHTML;
+  refreshButton.disabled = true;
+  refreshButton.classList.add("isLoading");
+  refreshButton.innerHTML = '<span class="refreshSpinner" aria-hidden="true"></span><span class="refreshText">Updating...</span>';
+
+  try {
+    await loadAll();
+  } catch (error) {
+    console.error("Refresh failed", error);
+  } finally {
+    refreshButton.disabled = false;
+    refreshButton.classList.remove("isLoading");
+    refreshButton.innerHTML = originalHtml;
+  }
+}
+
 loadAll();
