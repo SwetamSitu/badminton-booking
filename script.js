@@ -368,6 +368,23 @@ function escapeAttr(v){ return escapeHtml(v).replaceAll('"', '&quot;'); }
 function safeJson(obj){ return JSON.stringify(obj).replaceAll("<","\\u003c").replaceAll("'","&#39;"); }
 
 
+function toggleHelpPanel() {
+  const panel = document.getElementById("helpPanel");
+  if (panel && panel.classList.contains("open")) {
+    closeHelpPanel();
+  } else {
+    openHelpPanel();
+  }
+}
+
+function setHelpButtonState(isOpen) {
+  const btn = document.getElementById("helpFloatingBtn");
+  if (!btn) return;
+  btn.innerHTML = isOpen ? "✕ Close" : "❓ Help";
+  btn.setAttribute("aria-label", isOpen ? "Close help section" : "Open help section");
+  btn.classList.toggle("helpIsOpen", isOpen);
+}
+
 function openHelpPanel() {
   const panel = document.getElementById("helpPanel");
   const overlay = document.getElementById("helpOverlay");
@@ -376,6 +393,7 @@ function openHelpPanel() {
   panel.setAttribute("aria-hidden", "false");
   overlay.classList.remove("hidden");
   document.body.classList.add("helpOpen");
+  setHelpButtonState(true);
 }
 
 function closeHelpPanel() {
@@ -386,6 +404,7 @@ function closeHelpPanel() {
   panel.setAttribute("aria-hidden", "true");
   overlay.classList.add("hidden");
   document.body.classList.remove("helpOpen");
+  setHelpButtonState(false);
 }
 
 document.addEventListener("keydown", (event) => {

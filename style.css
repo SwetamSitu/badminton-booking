@@ -603,3 +603,63 @@ body.helpOpen{overflow:hidden;}
   padding: 18px 8px 8px;
   font-size: 14px;
 }
+
+
+/* v1.1 mobile Help & FAQ compact button */
+.helpFloatingBtn{
+  transition: transform .2s ease, box-shadow .2s ease, width .2s ease, padding .2s ease;
+}
+.helpFloatingBtn:hover{
+  transform: translateY(-1px);
+}
+.helpFloatingBtn.helpIsOpen{
+  background:#111827 !important;
+  color:#fff !important;
+  border-color:#111827 !important;
+}
+
+@media(max-width:640px){
+  .helpFloatingBtn{
+    right:12px !important;
+    bottom:12px !important;
+    width:auto !important;
+    min-width:112px !important;
+    max-width:140px !important;
+    height:46px !important;
+    padding:0 14px !important;
+    font-size:15px !important;
+    line-height:1 !important;
+    gap:6px !important;
+    border-radius:999px !important;
+    box-shadow:0 10px 24px rgba(17,24,39,.20) !important;
+    white-space:nowrap !important;
+  }
+
+  .helpFloatingBtn.helpIsOpen{
+    min-width:108px !important;
+    max-width:128px !important;
+  }
+
+  body{
+    padding-bottom:18px;
+  }
+
+  .footer,
+  footer{
+    padding-bottom:58px !important;
+  }
+
+  .helpPanel{
+    transition: transform .28s ease, visibility .28s ease !important;
+  }
+}
+
+@media(max-width:380px){
+  .helpFloatingBtn{
+    min-width:96px !important;
+    max-width:118px !important;
+    height:42px !important;
+    padding:0 12px !important;
+    font-size:14px !important;
+  }
+}
