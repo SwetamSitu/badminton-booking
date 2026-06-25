@@ -91,7 +91,7 @@ function renderPoll(bookings, polls) {
 
   if (!next) {
     currentPollBookingId = null;
-    pollTitle.textContent = "Daily Availability Poll";
+    pollTitle.textContent = "Today's Availability";
     pollMeta.textContent = "No future booking found. Add a future booking and the poll will appear here automatically.";
     pollSummary.classList.add("hidden");
     pollVoteBox.classList.add("hidden");
@@ -101,7 +101,7 @@ function renderPoll(bookings, polls) {
   }
 
   currentPollBookingId = next.id;
-  pollTitle.textContent = `Availability Poll • ${formatDate(next.date)}`;
+  pollTitle.textContent = `Today's Availability • ${formatDate(next.date)}`;
   pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
 
   const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
@@ -294,6 +294,8 @@ async function deletePastBookings() {
 
 function editBooking(b) {
   document.getElementById("id").value = b.id;
+  const formTitle = document.getElementById("bookingFormTitle");
+  if (formTitle) formTitle.textContent = "Edit Booking";
   document.getElementById("bookingBy").value = b.bookingBy || b.name || "";
   document.querySelectorAll('input[name="place"]').forEach(r => r.checked = r.value === b.place);
   document.getElementById("date").value = toInputDate(b.date);
@@ -306,7 +308,7 @@ function editBooking(b) {
   showPage("managePage");
 }
 
-function resetForm(){ form.reset(); document.getElementById("id").value=""; customTiming.classList.add("hidden"); }
+function resetForm(){ form.reset(); document.getElementById("id").value=""; customTiming.classList.add("hidden"); const formTitle = document.getElementById("bookingFormTitle"); if (formTitle) formTitle.textContent = "New Booking"; }
 function setStatus(msg){ statusText.textContent = msg; }
 async function postData(payload){ const r = await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)}); return r.json(); }
 

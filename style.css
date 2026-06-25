@@ -594,3 +594,12 @@ body.helpOpen{overflow:hidden;}
   justify-content:center;
   gap:8px;
 }
+
+/* v1.0 polish: app footer */
+.appFooter {
+  text-align: center;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 18px 8px 8px;
+  font-size: 14px;
+}
