@@ -359,7 +359,7 @@ function parseBookingScreenshot(text) {
   return results;
 }
 function normalizeTime(t){ const h = Number((t.match(/\d{1,2}/)||[])[0]); if(h===6)return"6-7PM"; if(h===7)return"7-8PM"; if(h===8)return"8-9PM"; return t.replace(/\s+/g,"").toUpperCase(); }
-function formatDate(value){ const d = new Date(toInputDate(value)+"T00:00:00"); return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"2-digit"}).replace(/ /g,"-"); }
+function formatDate(value){ const d = new Date(toInputDate(value)+"T00:00:00"); return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}).replace(/ /g,"-"); }
 function toInputDate(value){ if(!value)return""; if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value; return new Date(value).toLocaleDateString("en-CA"); }
 function escapeHtml(v){ return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 function escapeAttr(v){ return escapeHtml(v).replaceAll('"', '&quot;'); }
