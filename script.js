@@ -59,6 +59,26 @@ async function loadAll() {
   }
 }
 
+
+async function refreshAll(button) {
+  const originalText = button ? button.innerHTML : "";
+  if (button) {
+    button.disabled = true;
+    button.classList.add("loading");
+    button.innerHTML = `<span class="spinner" aria-hidden="true"></span> Updating...`;
+  }
+
+  try {
+    await loadAll();
+  } finally {
+    if (button) {
+      button.classList.remove("loading");
+      button.disabled = false;
+      button.innerHTML = originalText || "↻ Refresh";
+    }
+  }
+}
+
 function renderBookings(bookings) {
   if (!bookings.length) { cards.innerHTML = `<p class="muted">No bookings yet.</p>`; return; }
   cards.innerHTML = bookings.map(b => `

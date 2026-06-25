@@ -343,3 +343,26 @@ button[type="submit"],
     font-size:13px;
   }
 }
+
+
+/* v14: Refresh loading animation */
+.pollRefreshBtn.loading,
+.secondary.loading{
+  opacity:.78;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.spinner{
+  width:14px;
+  height:14px;
+  border:2px solid currentColor;
+  border-top-color:transparent;
+  border-radius:50%;
+  display:inline-block;
+  animation:refreshSpin .75s linear infinite;
+}
+
+@keyframes refreshSpin{
+  to{transform:rotate(360deg);}
+}
