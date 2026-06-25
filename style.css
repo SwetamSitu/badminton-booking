@@ -1063,3 +1063,116 @@ body{
   background:#f7f8fb !important;
   min-height:100%;
 }
+
+/* v1.7: Booking status + archive view */
+.bookingViewToggle{
+  display:inline-grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  width:min(360px,100%);
+  padding:6px;
+  margin:0 0 14px;
+  border:1px solid #fed7aa;
+  border-radius:18px;
+  background:#fff7ed;
+}
+
+.bookingViewBtn{
+  background:#fff;
+  color:#9a3412;
+  border:1px solid transparent;
+  border-radius:14px;
+  padding:10px 12px;
+  box-shadow:none;
+  font-weight:900;
+}
+
+.bookingViewBtn span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:24px;
+  height:24px;
+  margin-left:6px;
+  padding:0 7px;
+  border-radius:999px;
+  background:#fff7ed;
+  color:#9a3412;
+  font-size:12px;
+}
+
+.bookingViewBtn.active{
+  background:linear-gradient(135deg,#ff8a00,#ffb347);
+  color:#fff;
+  border-color:#ffb347;
+}
+
+.bookingViewBtn.active span{
+  background:rgba(255,255,255,.24);
+  color:#fff;
+}
+
+.statusChip-active{
+  background:#dcfce7!important;
+  color:#166534!important;
+  border-color:#bbf7d0!important;
+}
+.statusChip-cancelled{
+  background:#fee2e2!important;
+  color:#991b1b!important;
+  border-color:#fecaca!important;
+}
+.statusChip-completed{
+  background:#e0f2fe!important;
+  color:#075985!important;
+  border-color:#bae6fd!important;
+}
+.archiveChip{
+  background:#f3f4f6!important;
+  color:#4b5563!important;
+  border-color:#e5e7eb!important;
+}
+.archivedBooking{
+  background:#ffffff;
+  opacity:.96;
+}
+.booking.status-cancelled h3,
+.booking.status-completed h3{
+  color:#4b5563;
+}
+.emptyState{
+  display:grid;
+  gap:6px;
+  padding:22px;
+  border:1px dashed #fed7aa;
+  border-radius:18px;
+  background:#fff7ed;
+  color:#9a3412;
+}
+.emptyState strong{
+  font-size:18px;
+  color:#111827;
+}
+.emptyState span{
+  color:#6b7280;
+  line-height:1.45;
+}
+
+@media(max-width:560px){
+  .bookingViewToggle{
+    width:100%;
+    margin-top:4px;
+    margin-bottom:12px;
+    border-radius:16px;
+  }
+  .bookingViewBtn{
+    padding:9px 8px;
+    font-size:13px;
+  }
+  .bookingViewBtn span{
+    min-width:20px;
+    height:20px;
+    font-size:11px;
+    margin-left:4px;
+  }
+}

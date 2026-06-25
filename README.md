@@ -12,8 +12,10 @@ https://fullgardaa-badminton.rweb.site/
 - Add a new booking manually.
 - Add a booking from a Places Leisure screenshot using OCR.
 - Edit existing bookings.
+- Set booking status as Active, Cancelled, or Completed.
+- View past, cancelled, and completed bookings in the Archive.
 - Delete bookings with a confirmation popup.
-- Prevent duplicate bookings for the same date, place, time, and court.
+- Prevent duplicate active bookings for the same date, place, time, and court.
 - Vote Yes or No in the daily availability poll.
 - See who is available and not available.
 - Generate a WhatsApp reminder message for today's booking.
@@ -35,10 +37,11 @@ Use this section to add or update a booking. Required details are:
 - Date
 - Timing
 - Court number
+- Booking status
 
-Notes are optional.
+Notes are optional. New bookings are Active by default.
 
-The site prevents duplicate bookings. If the same date, place, timing, and court already exist, the site will ask you to edit the existing booking instead.
+The site prevents duplicate active bookings. If the same date, place, timing, and court already exist as an active booking, the site will ask you to edit the existing booking instead.
 
 ### Screenshot Upload
 
@@ -48,9 +51,12 @@ If screenshot reading fails, add the booking manually.
 
 ### Bookings
 
-The Bookings section shows the live booking list. You can edit or delete bookings from each booking card.
+The Bookings section has two views:
 
-Past bookings can also be deleted using the Delete Past Bookings button.
+- **Upcoming**: active upcoming bookings.
+- **Archive**: past bookings, cancelled bookings, and completed bookings.
+
+You can edit status, edit booking details, or delete bookings from each card. Past bookings can also be deleted using the Delete Past Bookings button.
 
 ### Help & FAQ
 
@@ -83,6 +89,8 @@ index.html
 style.css
 script.js
 README.md
+CNAME
+apps-script-code.js
 ```
 
 ## How to update the live site

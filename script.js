@@ -3,6 +3,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxa
 const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval", "Abhishek"].sort();
 let currentPollBookingId = null;
 let latestBookings = [];
+let bookingListView = "upcoming";
 
 function showPage(pageId) {
   document.querySelectorAll(".appPage").forEach(page => page.classList.toggle("active", page.id === pageId));
@@ -34,6 +35,7 @@ form.addEventListener("submit", async (event) => {
     date: document.getElementById("date").value,
     timing,
     court: document.getElementById("court").value,
+    status: document.getElementById("bookingStatus")?.value || "Active",
     notes: document.getElementById("notes").value.trim()
   };
 
@@ -77,26 +79,73 @@ async function loadAll() {
   }
 }
 
+function setBookingView(view) {
+  bookingListView = view === "archive" ? "archive" : "upcoming";
+  document.getElementById("upcomingViewBtn")?.classList.toggle("active", bookingListView === "upcoming");
+  document.getElementById("archiveViewBtn")?.classList.toggle("active", bookingListView === "archive");
+  renderBookings(latestBookings || []);
+}
+
 function renderBookings(bookings) {
-  if (!bookings.length) { cards.innerHTML = `<p class="muted">No bookings yet.</p>`; return; }
-  cards.innerHTML = bookings.map(b => `
-    <article class="booking">
+  const title = document.getElementById("bookingListTitle");
+  const description = document.getElementById("bookingListDescription");
+  const upcomingBtn = document.getElementById("upcomingViewBtn");
+  const archiveBtn = document.getElementById("archiveViewBtn");
+
+  const upcoming = (bookings || [])
+    .filter(b => !isArchivedBooking(b))
+    .sort((a, b) => new Date(toInputDate(a.date)) - new Date(toInputDate(b.date)) || timeRank(a.timing) - timeRank(b.timing));
+
+  const archive = (bookings || [])
+    .filter(isArchivedBooking)
+    .sort((a, b) => new Date(toInputDate(b.date)) - new Date(toInputDate(a.date)) || timeRank(a.timing) - timeRank(b.timing));
+
+  const visibleBookings = bookingListView === "archive" ? archive : upcoming;
+
+  if (upcomingBtn) upcomingBtn.innerHTML = `Upcoming <span>${upcoming.length}</span>`;
+  if (archiveBtn) archiveBtn.innerHTML = `Archive <span>${archive.length}</span>`;
+
+  if (title) title.textContent = bookingListView === "archive" ? "Booking Archive" : "Upcoming Bookings";
+  if (description) {
+    description.textContent = bookingListView === "archive"
+      ? "Past, cancelled, and completed bookings are stored here."
+      : "Manage, edit, or delete your upcoming active court bookings.";
+  }
+
+  if (!visibleBookings.length) {
+    cards.innerHTML = bookingListView === "archive"
+      ? `<div class="emptyState"><strong>No archived bookings yet.</strong><span>Past, cancelled, and completed bookings will appear here automatically.</span></div>`
+      : `<div class="emptyState"><strong>No upcoming active bookings.</strong><span>Add a new booking or check the archive for past/cancelled bookings.</span></div>`;
+    return;
+  }
+
+  cards.innerHTML = visibleBookings.map(b => {
+    const status = normalizeStatus(b.status);
+    const archiveReason = getArchiveReason(b);
+    const isArchive = bookingListView === "archive";
+    return `
+    <article class="booking ${isArchive ? "archivedBooking" : ""} status-${status.toLowerCase()}">
       <div><div class="datePill">${formatDate(b.date)}</div><div class="timePill">${escapeHtml(b.timing)}</div></div>
       <div>
         <h3>${escapeHtml(b.place)} • ${escapeHtml(b.court)}</h3>
-        <div class="meta"><span class="chip">By ${escapeHtml(b.bookingBy || b.name || "-")}</span>${b.notes ? `<span class="chip">${escapeHtml(b.notes)}</span>` : ""}</div>
+        <div class="meta">
+          <span class="chip">By ${escapeHtml(b.bookingBy || b.name || "-")}</span>
+          <span class="chip statusChip statusChip-${status.toLowerCase()}">${escapeHtml(status)}</span>
+          ${isArchive && archiveReason ? `<span class="chip archiveChip">${escapeHtml(archiveReason)}</span>` : ""}
+          ${b.notes ? `<span class="chip">${escapeHtml(b.notes)}</span>` : ""}
+        </div>
       </div>
       <div class="actions">
         <button class="edit" onclick='editBooking(${safeJson(b)})'>Edit</button>
         <button class="danger" onclick='deleteBooking("${escapeAttr(b.id)}")'>Delete</button>
       </div>
-    </article>
-  `).join("");
+    </article>`;
+  }).join("");
 }
 
 function renderPoll(bookings, polls) {
   const today = new Date(); today.setHours(0,0,0,0);
-  const next = bookings.find(b => new Date(b.date + "T00:00:00") >= today);
+  const next = bookings.find(b => isActiveBooking(b) && new Date(toInputDate(b.date) + "T00:00:00") >= today);
   const pollCard = document.getElementById("pollCard");
   const pollTitle = document.getElementById("pollTitle");
   const pollMeta = document.getElementById("pollMeta");
@@ -208,7 +257,7 @@ function renderWhatsAppReminder(bookings) {
   const now = new Date();
   const todayIso = now.toLocaleDateString("en-CA");
   const todayBookings = (bookings || [])
-    .filter(b => toInputDate(b.date) === todayIso)
+    .filter(b => isActiveBooking(b) && toInputDate(b.date) === todayIso)
     .sort((a, b) => timeRank(a.timing) - timeRank(b.timing));
 
   if (!todayBookings.length) {
@@ -265,7 +314,7 @@ function timeRank(timing) {
 async function deleteBooking(id) {
   const booking = (latestBookings || []).find(item => String(item.id) === String(id));
   const bookingText = booking
-    ? `${formatDate(booking.date)} • ${booking.place} • ${booking.court} • ${booking.timing}`
+    ? `${formatDate(booking.date)} • ${booking.place} • ${booking.court} • ${booking.timing} • ${normalizeStatus(booking.status)}`
     : "this booking";
 
   const confirmed = await showConfirmDialog({
@@ -331,6 +380,34 @@ async function deletePastBookings() {
   }
 }
 
+
+function normalizeStatus(status) {
+  const value = String(status || "Active").trim().toLowerCase();
+  if (value === "cancelled" || value === "canceled") return "Cancelled";
+  if (value === "completed" || value === "complete") return "Completed";
+  return "Active";
+}
+
+function isActiveBooking(booking) {
+  return normalizeStatus(booking.status) === "Active";
+}
+
+function isArchivedBooking(booking) {
+  const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return bookingDate < today || normalizeStatus(booking.status) !== "Active";
+}
+
+function getArchiveReason(booking) {
+  const status = normalizeStatus(booking.status);
+  if (status !== "Active") return status;
+  const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return bookingDate < today ? "Past booking" : "";
+}
+
 function normalizeBookingPart(value) {
   return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
 }
@@ -351,6 +428,7 @@ function findDuplicateBooking(booking) {
   return (latestBookings || []).find(existing => {
     if (!existing || !existing.id) return false;
     if (String(existing.id) === String(booking.id)) return false;
+    if (!isActiveBooking(existing)) return false;
     return bookingSignature(existing) === currentSignature;
   }) || null;
 }
@@ -450,11 +528,21 @@ function editBooking(b) {
   customTiming.classList.toggle("hidden", knownTiming);
   customTiming.value = knownTiming ? "" : b.timing;
   document.getElementById("court").value = b.court;
+  const statusSelect = document.getElementById("bookingStatus");
+  if (statusSelect) statusSelect.value = normalizeStatus(b.status);
   document.getElementById("notes").value = b.notes || "";
   showPage("managePage");
 }
 
-function resetForm(){ form.reset(); document.getElementById("id").value=""; customTiming.classList.add("hidden"); const formTitle = document.getElementById("bookingFormTitle"); if (formTitle) formTitle.textContent = "New Booking"; }
+function resetForm(){
+  form.reset();
+  document.getElementById("id").value="";
+  customTiming.classList.add("hidden");
+  const statusSelect = document.getElementById("bookingStatus");
+  if (statusSelect) statusSelect.value = "Active";
+  const formTitle = document.getElementById("bookingFormTitle");
+  if (formTitle) formTitle.textContent = "New Booking";
+}
 function setStatus(msg){ statusText.textContent = msg; }
 async function postData(payload){ const r = await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)}); return r.json(); }
 

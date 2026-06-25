@@ -42,7 +42,7 @@
           <ol>
             <li>Open the <strong>Dashboard</strong> tab to check today's availability and WhatsApp reminder.</li>
             <li>Use <strong>New Booking</strong> to add a court manually or from a screenshot.</li>
-            <li>Use <strong>Bookings</strong> to view, edit, or delete bookings.</li>
+            <li>Use <strong>Bookings</strong> to view upcoming bookings, update statuses, open the archive, edit, or delete bookings.</li>
           </ol>
         </section>
 
@@ -60,7 +60,7 @@
           <h3>How to add a booking</h3>
           <ol>
             <li>Go to <strong>New Booking</strong>.</li>
-            <li>Select booking person, place, date, time, and court.</li>
+            <li>Select booking person, place, date, time, court, and status.</li>
             <li>Add optional notes and tap <strong>Save Booking</strong>.</li>
           </ol>
         </section>
@@ -87,7 +87,11 @@
           </details>
           <details>
             <summary>Why can't I save the booking?</summary>
-            <p>The site prevents duplicate bookings for the same date, place, time, and court. Edit the existing booking or choose a different slot.</p>
+            <p>The site prevents duplicate active bookings for the same date, place, time, and court. Edit the existing booking or choose a different slot.</p>
+          </details>
+          <details>
+            <summary>Where are old bookings?</summary>
+            <p>Open <strong>Bookings</strong> and switch to <strong>Archive</strong>. Past, cancelled, and completed bookings are shown there.</p>
           </details>
           <details>
             <summary>Why is my screenshot not detected?</summary>
@@ -211,6 +215,13 @@
             <option value="">Select court</option>
           </select>
 
+          <label>Booking Status</label>
+          <select id="bookingStatus" required>
+            <option value="Active">Active</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
+          </select>
+
           <label>Notes</label>
           <textarea id="notes" placeholder="Optional notes"></textarea>
 
@@ -244,14 +255,19 @@
         <div class="sectionTitle split">
           <div>
             <p class="eyebrow">📅 Bookings</p>
-          <h2>Upcoming Bookings</h2><p class="muted">Manage, edit, or delete your upcoming court bookings.</p>
+            <h2 id="bookingListTitle">Upcoming Bookings</h2>
+            <p id="bookingListDescription" class="muted">Manage, edit, or delete your upcoming active court bookings.</p>
+          </div>
+          <div class="buttonRow liveListActions">
+            <button class="secondary liveRefreshBtn" onclick="refreshLiveListWithLoading(this)"><span class="refreshIcon">↻</span><span class="refreshText">Refresh</span></button>
+            <button class="danger" onclick="deletePastBookings()">Delete Past Bookings</button>
+          </div>
         </div>
-        <div class="buttonRow liveListActions">
-          <button class="secondary liveRefreshBtn" onclick="refreshLiveListWithLoading(this)"><span class="refreshIcon">↻</span><span class="refreshText">Refresh</span></button>
-          <button class="danger" onclick="deletePastBookings()">Delete Past Bookings</button>
+        <div class="bookingViewToggle" role="tablist" aria-label="Booking list view">
+          <button type="button" id="upcomingViewBtn" class="bookingViewBtn active" onclick="setBookingView('upcoming')">Upcoming</button>
+          <button type="button" id="archiveViewBtn" class="bookingViewBtn" onclick="setBookingView('archive')">Archive</button>
         </div>
-      </div>
-      <p id="deletePastStatus" class="status"></p>
+        <p id="deletePastStatus" class="status"></p>
         <div id="bookingCards" class="bookingCards"></div>
       </section>
     </section>
