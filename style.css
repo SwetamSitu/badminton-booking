@@ -901,3 +901,57 @@ body.helpOpen{overflow:hidden;}
   .pollCard .sectionTitle{padding-right:88px !important;}
   .pollRefreshBtn{padding:7px 10px !important;}
 }
+
+/* v1.3: Compact mobile poll controls */
+@media(max-width:800px){
+  .pollVoteBox{
+    padding:12px !important;
+    gap:9px !important;
+    margin:10px 0 12px !important;
+    border-radius:18px !important;
+  }
+
+  .pollVoteBox label[for="pollPlayer"]{
+    margin-bottom:2px !important;
+    font-size:14px !important;
+  }
+
+  .pollVoteBox select{
+    min-height:46px !important;
+    padding:11px 14px !important;
+    border-radius:15px !important;
+  }
+
+  .voteChoice{
+    gap:8px !important;
+    margin-top:2px !important;
+  }
+
+  .choice{
+    min-height:46px !important;
+    padding:8px 10px !important;
+    border-radius:15px !important;
+    font-size:15px !important;
+    gap:7px !important;
+  }
+
+  .choice input[type="radio"]{
+    width:17px !important;
+    height:17px !important;
+  }
+
+  .pollVoteBox button{
+    min-height:46px !important;
+    margin-top:4px !important;
+    border-radius:15px !important;
+  }
+
+  .pollResultLists{
+    margin-top:10px !important;
+  }
+
+  .resultList{
+    min-height:auto !important;
+    padding:14px !important;
+  }
+}
