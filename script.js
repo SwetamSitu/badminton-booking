@@ -342,15 +342,23 @@ function renderPlayerStats(bookings = [], polls = []) {
   });
 
   const pollEligibleBookings = periodBookings.filter(booking => normalizeStatus(booking.status) !== "Cancelled");
+  const completedVoteRequiredBookings = pollEligibleBookings.filter(booking => getDisplayStatus(booking) === "Completed");
   const eligibleIds = new Set(pollEligibleBookings.map(booking => String(booking.id)));
+  const completedVoteRequiredIds = new Set(completedVoteRequiredBookings.map(booking => String(booking.id)));
   const latestVoteByBookingPlayer = {};
+  const latestCompletedVoteByBookingPlayer = {};
 
   (polls || []).forEach(poll => {
     const bookingId = String(poll.bookingId || "");
     const player = normalizePlayerName(poll.player);
     const answer = normalizePollAnswer(poll.answer);
     if (!eligibleIds.has(bookingId) || !player || !answer) return;
+
     latestVoteByBookingPlayer[`${bookingId}|${player}`] = answer;
+
+    if (completedVoteRequiredIds.has(bookingId)) {
+      latestCompletedVoteByBookingPlayer[`${bookingId}|${player}`] = answer;
+    }
   });
 
   const stats = PLAYERS.map(player => ({
@@ -380,7 +388,13 @@ function renderPlayerStats(bookings = [], polls = []) {
 
   stats.forEach(playerStats => {
     playerStats.votes = playerStats.yes + playerStats.no;
-    playerStats.missed = Math.max(0, pollEligibleBookings.length - playerStats.votes);
+
+    const completedVotes = Object.keys(latestCompletedVoteByBookingPlayer).filter(key => {
+      const player = key.split("|")[1];
+      return player === playerStats.player;
+    }).length;
+
+    playerStats.missed = Math.max(0, completedVoteRequiredBookings.length - completedVotes);
     playerStats.availability = playerStats.votes ? Math.round((playerStats.yes / playerStats.votes) * 100) : 0;
   });
 
@@ -393,8 +407,8 @@ function renderPlayerStats(bookings = [], polls = []) {
 
   if (description) {
     description.textContent = statsView === "month"
-      ? `Stats for ${periodLabel}: availability votes, missed votes, and bookings created.`
-      : "All-time availability votes, missed votes, and bookings created.";
+      ? `Stats for ${periodLabel}: availability votes, not-voted count, and bookings created.`
+      : "All-time availability votes, not-voted count, and bookings created.";
   }
 
   overview.innerHTML = `
@@ -413,8 +427,8 @@ function renderPlayerStats(bookings = [], polls = []) {
   const topBooker = [...stats]
     .filter(player => player.bookingsCreated > 0)
     .sort((a, b) => b.bookingsCreated - a.bookingsCreated || a.player.localeCompare(b.player))[0];
-  const mostMissed = [...stats]
-    .filter(player => player.missed > 0 && pollEligibleBookings.length > 0)
+  const mostNotVoted = [...stats]
+    .filter(player => player.missed > 0 && completedVoteRequiredBookings.length > 0)
     .sort((a, b) => b.missed - a.missed || a.player.localeCompare(b.player))[0];
 
   highlights.innerHTML = `
@@ -429,9 +443,9 @@ function renderPlayerStats(bookings = [], polls = []) {
       <small>${topBooker ? `${topBooker.bookingsCreated} booking${topBooker.bookingsCreated === 1 ? "" : "s"}` : "Booking data will appear here."}</small>
     </div>
     <div class="highlightCard">
-      <span>⏳ Most Missed Votes</span>
-      <strong>${mostMissed ? escapeHtml(mostMissed.player) : "No missed votes"}</strong>
-      <small>${mostMissed ? `${mostMissed.missed} missed` : "Everyone is up to date for this period."}</small>
+      <span>⏳ Most Not Voted</span>
+      <strong>${mostNotVoted ? escapeHtml(mostNotVoted.player) : "No pending past votes"}</strong>
+      <small>${mostNotVoted ? `${mostNotVoted.missed} not voted` : "Everyone has voted for completed bookings in this period."}</small>
     </div>
   `;
 
@@ -442,7 +456,7 @@ function renderPlayerStats(bookings = [], polls = []) {
 
   grid.innerHTML = stats
     .sort((a, b) => b.yes - a.yes || b.bookingsCreated - a.bookingsCreated || a.player.localeCompare(b.player))
-    .map(player => renderPlayerStatCard(player, pollEligibleBookings.length))
+    .map(player => renderPlayerStatCard(player, completedVoteRequiredBookings.length))
     .join("");
 }
 
@@ -466,7 +480,7 @@ function renderPlayerStatCard(playerStats, eligibleBookingCount) {
       <div class="playerStatMetrics">
         <span class="yesMetric">Yes <b>${playerStats.yes}</b></span>
         <span class="noMetric">No <b>${playerStats.no}</b></span>
-        <span>Missed <b>${eligibleBookingCount ? playerStats.missed : 0}</b></span>
+        <span>Not Voted <b>${eligibleBookingCount ? playerStats.missed : 0}</b></span>
         <span>Booked <b>${playerStats.bookingsCreated}</b></span>
       </div>
     </article>`;
