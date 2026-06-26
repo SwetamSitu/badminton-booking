@@ -141,6 +141,7 @@ function renderBookings(bookings) {
       </div>
       <div class="actions">
         <button class="edit" onclick='editBooking(${safeJson(b)})'>Edit</button>
+        ${status === "Active" ? `<button class="cancel" onclick='cancelBooking("${escapeAttr(b.id)}")'>Cancel</button>` : ""}
         <button class="danger" onclick='deleteBooking("${escapeAttr(b.id)}")'>Delete</button>
       </div>
     </article>`;
@@ -490,6 +491,39 @@ function timeRank(timing) {
   if (text.includes("8-9")) return 3;
   const hour = Number((text.match(/\d{1,2}/) || [99])[0]);
   return Number.isFinite(hour) ? hour : 99;
+}
+
+
+async function cancelBooking(id) {
+  const booking = (latestBookings || []).find(item => String(item.id) === String(id));
+  if (!booking) {
+    await showAlertDialog("Booking not found", "Please refresh the booking list and try again.");
+    return;
+  }
+
+  const bookingText = `${formatDate(booking.date)} • ${booking.place} • ${booking.court} • ${booking.timing}`;
+  const confirmed = await showConfirmDialog({
+    title: "Cancel booking?",
+    message: `This will mark ${bookingText} as Cancelled and move it to the Archive. The booking record will be kept for history.`,
+    confirmText: "Yes, Cancel Booking",
+    cancelText: "Keep Active",
+    danger: false
+  });
+
+  if (!confirmed) return;
+
+  const result = await postData({
+    action: "saveBooking",
+    ...booking,
+    status: "Cancelled"
+  });
+
+  if (result.success) {
+    await loadAll();
+    await showAlertDialog("Booking cancelled", "The booking has been moved to the Archive.");
+  } else {
+    await showAlertDialog("Cancel failed", result.message || "Could not cancel the booking. Please try again.");
+  }
 }
 
 async function deleteBooking(id) {

@@ -236,6 +236,7 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
 }
 
 .edit,
+.cancel,
 .secondary,
 .pollRefreshBtn,
 .liveListActions .secondary{
@@ -246,11 +247,22 @@ form{display:grid;gap:11px} label{font-size:14px;font-weight:750;color:#374151} 
 }
 
 .edit:hover,
+.cancel:hover,
 .secondary:hover,
 .pollRefreshBtn:hover,
 .liveListActions .secondary:hover{
   background:#ffedd5;
   transform:translateY(-1px);
+}
+
+.cancel{
+  background:#fffbeb;
+  color:#92400e;
+  border:1px solid #fcd34d;
+}
+
+.cancel:hover{
+  background:#fef3c7;
 }
 
 .danger{

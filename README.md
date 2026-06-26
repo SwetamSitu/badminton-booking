@@ -13,6 +13,7 @@ https://fullgardaa-badminton.rweb.site/
 - Add a booking from a Places Leisure screenshot using OCR.
 - Edit existing bookings.
 - Set booking status as Active, Cancelled, or Completed.
+- Cancel active bookings directly from booking cards and keep them in the Archive.
 - View past, cancelled, and completed bookings in the Archive.
 - Delete bookings with a confirmation popup.
 - Prevent duplicate active bookings for the same date, place, time, and court.
@@ -58,7 +59,7 @@ The Bookings section has two views:
 - **Upcoming**: active upcoming bookings.
 - **Archive**: past bookings, cancelled bookings, and completed bookings.
 
-You can edit status, edit booking details, or delete bookings from each card. Past bookings can also be deleted using the Delete Past Bookings button.
+You can edit booking details, cancel active bookings, or delete bookings from each card. Cancelled bookings are kept in the Archive, while deleted bookings are permanently removed. Past bookings can also be deleted using the Delete Past Bookings button.
 
 ### Stats
 
