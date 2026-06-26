@@ -113,3 +113,9 @@ apps-script-code.js
 Anyone with the link can view, add, edit, delete, and vote. Please edit or delete carefully.
 
 Made with ❤️ by Swetam Meher.
+
+
+## v1.14 UI refinement
+
+- Improved the mobile availability card heading so the date appears cleanly in the details line.
+- Reduced the Yes/No vote option height on mobile for a more compact layout.

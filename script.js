@@ -180,8 +180,8 @@ function renderPoll(bookings, polls) {
 
   currentPollBookingId = next.id;
   if (pollEyebrow) pollEyebrow.textContent = `🏸 ${availabilityLabel}`;
-  pollTitle.textContent = `${availabilityLabel} • ${formatDate(next.date)}`;
-  pollMeta.textContent = `${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
+  pollTitle.textContent = availabilityLabel;
+  pollMeta.textContent = `${formatDate(next.date)} • ${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
 
   const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
   updatePollSummary(latest);
