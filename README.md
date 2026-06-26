@@ -136,3 +136,9 @@ Made with ❤️ by Swetam Meher.
 - Prevented poll session cards from squeezing or overflowing.
 - Kept each session vote form clean and stacked on desktop.
 - Preserved the existing mobile layout and colour palette.
+
+## v1.17 Update
+
+- Mobile booking cards now keep **Edit / Cancel / Delete** buttons on one line.
+- Button spacing and font size adjusted for small screens.
+
