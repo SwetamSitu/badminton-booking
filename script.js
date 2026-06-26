@@ -1,28 +1,6 @@
-// Google Apps Script Web App URL.
+// Replace this with your deployed Google Apps Script Web App URL.
 const API_URL = "https://script.google.com/macros/s/AKfycbwxexiXrszv-I_YV0B8aaxaIg3uNltJ3gPdwCge5Erx5wZ8_g_yjrE0IoT63YKczjTv5w/exec";
-
-// Firebase Google Sign-In config.
-// Replace these values with your Firebase Web App config from Firebase Console.
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCyvSpzXc6H4DHEJYhAtSAoMdBdHVD9KnA",
-    authDomain: "full-gardaa-badminton.firebaseapp.com",
-    projectId: "full-gardaa-badminton",
-    storageBucket: "full-gardaa-badminton.firebasestorage.app",
-    messagingSenderId: "440620550842",
-    appId: "1:440620550842:web:5f114584b1224c4c53d083",
-    measurementId: "G-JN1XDZNKYM"
-  };
-
-// Only these Google emails can open and use the app.
-// Add your badminton friends' Google emails here. All approved users can add, edit, cancel, delete, and vote.
-const ALLOWED_EMAILS = [
-  "mehersitu2013@gmail.com",
-  "swetam.meher.uk@gmail.com"
-].map(email => email.toLowerCase());
-
 const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Ujjval", "Abhishek"].sort();
-let currentUser = null;
-let firebaseAuth = null;
 let currentPollBookingId = null;
 let latestBookings = [];
 let bookingListView = "upcoming";
@@ -30,128 +8,6 @@ let statsView = "month";
 let latestPolls = [];
 let currentPollSessions = [];
 let currentPollSessionVotes = {};
-
-function isFirebaseConfigured() {
-  return FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).includes("PASTE_");
-}
-
-function isAllowedUser(email) {
-  return ALLOWED_EMAILS.includes(String(email || "").trim().toLowerCase());
-}
-
-function showAuthStatus(message) {
-  const authStatus = document.getElementById("authStatus");
-  if (authStatus) authStatus.textContent = message || "";
-}
-
-function setAppAccess(isSignedIn) {
-  document.getElementById("authGate")?.classList.toggle("hidden", isSignedIn);
-  document.getElementById("mainApp")?.classList.toggle("hidden", !isSignedIn);
-}
-
-function updateUserBar(user) {
-  const userBar = document.getElementById("userBar");
-  const nameEl = document.getElementById("signedInUserName");
-  const emailEl = document.getElementById("signedInUserEmail");
-  const avatarEl = document.getElementById("userAvatar");
-
-  if (!userBar || !nameEl || !emailEl || !avatarEl) return;
-
-  userBar.classList.remove("hidden");
-  nameEl.textContent = user.displayName || "Signed in user";
-  emailEl.textContent = user.email || "";
-  avatarEl.textContent = (user.displayName || user.email || "U").trim().charAt(0).toUpperCase();
-}
-
-function initAuth() {
-  setAppAccess(false);
-
-  const signInBtn = document.getElementById("googleSignInBtn");
-  const signOutBtn = document.getElementById("signOutBtn");
-
-  if (!isFirebaseConfigured()) {
-    showAuthStatus("Firebase is not configured yet. Add your Firebase Web App config in script.js first.");
-    if (signInBtn) signInBtn.disabled = true;
-    return;
-  }
-
-  try {
-    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    firebaseAuth = firebase.auth();
-  } catch (error) {
-    console.error("Firebase initialisation failed", error);
-    showAuthStatus("Firebase could not be started. Please check the config in script.js.");
-    return;
-  }
-
-  if (signInBtn) {
-    signInBtn.addEventListener("click", async () => {
-      showAuthStatus("Opening Google sign-in...");
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await firebaseAuth.signInWithPopup(provider);
-      } catch (error) {
-        console.error("Google sign-in failed", error);
-        showAuthStatus(error?.message || "Google sign-in failed. Please try again.");
-      }
-    });
-  }
-
-  if (signOutBtn) {
-    signOutBtn.addEventListener("click", async () => {
-      await firebaseAuth.signOut();
-    });
-  }
-
-  firebaseAuth.onAuthStateChanged(async user => {
-    if (!user) {
-      currentUser = null;
-      setAppAccess(false);
-      showAuthStatus("");
-      return;
-    }
-
-    if (!isAllowedUser(user.email)) {
-      const deniedEmail = user.email || "this email";
-      currentUser = null;
-      await firebaseAuth.signOut();
-      setAppAccess(false);
-      showAuthStatus(`${deniedEmail} is not authorised for this badminton group. Please contact Swetam.`);
-      return;
-    }
-
-    currentUser = {
-      email: user.email,
-      displayName: user.displayName || user.email,
-      photoURL: user.photoURL || ""
-    };
-
-    setAppAccess(true);
-    updateUserBar(currentUser);
-    showAuthStatus("");
-    await loadAll();
-  });
-}
-
-function getApiUrl(action) {
-  const email = encodeURIComponent(currentUser?.email || "");
-  return `${API_URL}?action=${encodeURIComponent(action)}&userEmail=${email}`;
-}
-
-function getAuthPayload(payload = {}) {
-  return {
-    ...payload,
-    userEmail: currentUser?.email || "",
-    userName: currentUser?.displayName || ""
-  };
-}
-
-function requireSignedInMessage() {
-  if (currentUser) return false;
-  showAuthStatus("Please sign in with Google to continue.");
-  setAppAccess(false);
-  return true;
-}
 
 function showPage(pageId) {
   document.querySelectorAll(".appPage").forEach(page => page.classList.toggle("active", page.id === pageId));
@@ -171,7 +27,6 @@ timingSelect.addEventListener("change", () => customTiming.classList.toggle("hid
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (requireSignedInMessage()) return;
   const place = document.querySelector('input[name="place"]:checked')?.value || "";
   const timing = timingSelect.value === "Anything else" ? customTiming.value.trim() : timingSelect.value;
   if (!timing) return setStatus("Please enter the custom timing.");
@@ -214,11 +69,9 @@ Please edit the existing booking or choose a different date, time, place, or cou
 async function loadAll() {
   cards.innerHTML = `<p class="muted">Loading bookings...</p>`;
   try {
-    const response = await fetch(getApiUrl("getAll"));
+    const response = await fetch(`${API_URL}?action=getAll`);
     const data = await response.json();
-    if (data && data.success === false) throw new Error(data.message || "Not authorised");
-    const bookingPayload = Array.isArray(data) ? data : (data.bookings || []);
-    const bookings = bookingPayload.filter(b => b.id && b.date);
+    const bookings = (data.bookings || data || []).filter(b => b.id && b.date);
     bookings.sort((a,b) => new Date(a.date) - new Date(b.date));
     latestBookings = bookings;
     latestPolls = data.polls || [];
@@ -478,7 +331,6 @@ function updatePollSummary(latest) {
 }
 
 async function submitPollVote(bookingId = currentPollBookingId, sessionKey = "") {
-  if (requireSignedInMessage()) return;
   const playerElement = sessionKey ? document.getElementById(`pollPlayer_${sessionKey}`) : document.getElementById("pollPlayer");
   const answerSelector = sessionKey ? `input[name="pollAnswer_${sessionKey}"]:checked` : 'input[name="pollAnswer"]:checked';
   const statusElement = sessionKey ? document.getElementById(`pollVoteStatus_${sessionKey}`) : document.getElementById("pollVoteStatus");
@@ -753,7 +605,6 @@ function timeRank(timing) {
 
 
 async function cancelBooking(id) {
-  if (requireSignedInMessage()) return;
   const booking = (latestBookings || []).find(item => String(item.id) === String(id));
   if (!booking) {
     await showAlertDialog("Booking not found", "Please refresh the booking list and try again.");
@@ -786,7 +637,6 @@ async function cancelBooking(id) {
 }
 
 async function deleteBooking(id) {
-  if (requireSignedInMessage()) return;
   const booking = (latestBookings || []).find(item => String(item.id) === String(id));
   const bookingText = booking
     ? `${formatDate(booking.date)} • ${booking.place} • ${booking.court} • ${booking.timing} • ${normalizeStatus(booking.status)}`
@@ -882,11 +732,9 @@ function findDuplicateBooking(booking) {
 
 async function ensureLatestBookings() {
   try {
-    const response = await fetch(getApiUrl("getAll"));
+    const response = await fetch(`${API_URL}?action=getAll`);
     const data = await response.json();
-    if (data && data.success === false) throw new Error(data.message || "Not authorised");
-    const bookingPayload = Array.isArray(data) ? data : (data.bookings || []);
-    latestBookings = bookingPayload.filter(b => b.id && b.date);
+    latestBookings = (data.bookings || data || []).filter(b => b.id && b.date);
   } catch (error) {
     console.warn("Could not refresh bookings before duplicate check. Using currently loaded bookings.", error);
   }
@@ -993,14 +841,9 @@ function resetForm(){
   if (formTitle) formTitle.textContent = "New Booking";
 }
 function setStatus(msg){ statusText.textContent = msg; }
-async function postData(payload){
-  if (requireSignedInMessage()) return { success:false, message:"Please sign in again." };
-  const r = await fetch(API_URL,{method:"POST",body:JSON.stringify(getAuthPayload(payload))});
-  return r.json();
-}
+async function postData(payload){ const r = await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)}); return r.json(); }
 
 async function readScreenshot() {
-  if (requireSignedInMessage()) return;
   const file = document.getElementById("screenshotInput").files[0];
   const ocrStatus = document.getElementById("ocrStatus");
   const preview = document.getElementById("ocrPreview");
@@ -1149,4 +992,4 @@ async function refreshLiveListWithLoading(button) {
   }
 }
 
-initAuth();
+loadAll();

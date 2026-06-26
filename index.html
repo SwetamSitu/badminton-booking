@@ -7,38 +7,13 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <section id="authGate" class="authGate">
-    <div class="authCard">
-      <div class="authLogo">🏸</div>
-      <p class="eyebrow">Full Gardaa Badminton Group</p>
-      <h1>Sign in to continue</h1>
-      <p class="muted">Use your approved Google account to access court bookings, polls, stats, and booking management.</p>
-      <button type="button" id="googleSignInBtn" class="googleSignInBtn">
-        <span>G</span> Sign in with Google
-      </button>
-      <p id="authStatus" class="status authStatus"></p>
-      <p class="authHelp">If your email is not approved, please contact Swetam.</p>
-    </div>
-  </section>
-
-  <main id="mainApp" class="app hidden">
+  <main class="app">
     <section class="hero">
       <div>
         <p class="eyebrow">Full Gardaa Badminton Group</p>
         <h1>Court Bookings</h1>
         <p class="subtext">Vote in the daily poll, share WhatsApp reminders, add bookings, and manage the live booking list.</p>
       </div>
-    </section>
-
-    <section id="userBar" class="userBar hidden" aria-label="Signed in user details">
-      <div class="userIdentity">
-        <span class="userAvatar" id="userAvatar">👤</span>
-        <div>
-          <strong id="signedInUserName">Signed in</strong>
-          <small id="signedInUserEmail"></small>
-        </div>
-      </div>
-      <button type="button" id="signOutBtn" class="signOutBtn">Sign out</button>
     </section>
 
     <nav class="pageTabs" aria-label="Booking app sections">
@@ -110,8 +85,8 @@
             <p>Tap <strong>Refresh</strong>. If it still does not update, close and reopen the page.</p>
           </details>
           <details>
-            <summary>Who can edit, cancel, or delete a booking?</summary>
-            <p>Any approved signed-in Google user can add, edit, cancel, delete, and vote. Please update bookings carefully.</p>
+            <summary>Can anyone edit or delete a booking?</summary>
+            <p>Yes. Anyone with the link can update bookings, so please edit or delete carefully.</p>
           </details>
           <details>
             <summary>Why can't I save the booking?</summary>
@@ -333,8 +308,6 @@
       </div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="script.js"></script>
 </body>
