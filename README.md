@@ -18,6 +18,8 @@ https://fullgardaa-badminton.rweb.site/
 - Prevent duplicate active bookings for the same date, place, time, and court.
 - Vote Yes or No in the daily availability poll.
 - See who is available and not available.
+- View Player Stats for this month and all time.
+- Track Yes/No votes, availability percentage, missed votes, and bookings created.
 - Generate a WhatsApp reminder message when there is a booking today.
 - Copy or share the WhatsApp reminder with the group.
 - Use the site comfortably on mobile and desktop.
@@ -57,6 +59,10 @@ The Bookings section has two views:
 - **Archive**: past bookings, cancelled bookings, and completed bookings.
 
 You can edit status, edit booking details, or delete bookings from each card. Past bookings can also be deleted using the Delete Past Bookings button.
+
+### Stats
+
+The Stats section shows player-level availability and contribution data. It includes Yes votes, No votes, missed votes, availability percentage, and how many bookings each player created. You can switch between This Month and All Time.
 
 ### Help & FAQ
 

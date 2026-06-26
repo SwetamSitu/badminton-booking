@@ -1176,3 +1176,287 @@ body{
     margin-left:4px;
   }
 }
+
+/* v1.10: Player Stats page */
+.pageTabs{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+.statsCard{
+  border-color:#fed7aa;
+}
+
+.statsHeader{
+  align-items:flex-start;
+}
+
+.statsToggle{
+  display:inline-grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  padding:6px;
+  border:1px solid #fed7aa;
+  border-radius:18px;
+  background:#fff7ed;
+  min-width:260px;
+}
+
+.statsToggleBtn{
+  background:#fff;
+  color:#9a3412;
+  border:1px solid transparent;
+  border-radius:14px;
+  padding:10px 12px;
+  box-shadow:none;
+  font-weight:900;
+}
+
+.statsToggleBtn.active{
+  background:linear-gradient(135deg,#ff8a00,#ffb347);
+  color:#fff;
+  border-color:#ffb347;
+}
+
+.statsOverview{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:10px;
+  margin:14px 0 16px;
+}
+
+.statsOverviewCard{
+  min-height:86px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+}
+
+.statsOverviewCard span{
+  color:#6b7280;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.statsOverviewCard strong{
+  color:#111827;
+  font-size:24px;
+  line-height:1;
+}
+
+.statsOverviewCard.yesStat{
+  background:#ecfdf3;
+  border-color:#bbf7d0;
+}
+
+.statsOverviewCard.yesStat strong,
+.statsOverviewCard.yesStat span{
+  color:#067647;
+}
+
+.statsOverviewCard.noStat{
+  background:#fef3f2;
+  border-color:#fecaca;
+}
+
+.statsOverviewCard.noStat strong,
+.statsOverviewCard.noStat span{
+  color:#b42318;
+}
+
+.statsHighlights{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.highlightCard{
+  display:grid;
+  gap:6px;
+  padding:16px;
+  border:1px solid #fed7aa;
+  border-radius:20px;
+  background:#fff7ed;
+}
+
+.highlightCard span{
+  color:#9a3412;
+  font-size:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.highlightCard strong{
+  font-size:20px;
+  color:#111827;
+}
+
+.highlightCard small{
+  color:#6b7280;
+  font-weight:750;
+}
+
+.playerStatsGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.playerStatCard{
+  display:grid;
+  gap:12px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(17,24,39,.04);
+}
+
+.playerStatTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.playerStatTop strong{
+  display:block;
+  font-size:18px;
+  color:#111827;
+}
+
+.playerStatTop span{
+  display:block;
+  margin-top:3px;
+  color:#6b7280;
+  font-weight:750;
+  font-size:13px;
+}
+
+.availabilityBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  height:38px;
+  padding:0 12px;
+  border-radius:999px;
+  background:#ecfdf3;
+  color:#067647;
+  font-weight:950;
+  border:1px solid #bbf7d0;
+}
+
+.statProgress{
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#fee2e2;
+  border:1px solid #fecaca;
+}
+
+.statProgress span{
+  display:block;
+  height:100%;
+  background:#16a34a;
+  border-radius:999px;
+}
+
+.playerStatMetrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+
+.playerStatMetrics span{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  padding:9px 10px;
+  border-radius:14px;
+  background:#f9fafb;
+  color:#4b5563;
+  font-size:12px;
+  font-weight:900;
+}
+
+.playerStatMetrics b{
+  color:#111827;
+  font-size:14px;
+}
+
+.playerStatMetrics .yesMetric{
+  background:#ecfdf3;
+  color:#067647;
+}
+
+.playerStatMetrics .yesMetric b{
+  color:#067647;
+}
+
+.playerStatMetrics .noMetric{
+  background:#fef3f2;
+  color:#b42318;
+}
+
+.playerStatMetrics .noMetric b{
+  color:#b42318;
+}
+
+@media(max-width:980px){
+  .statsOverview{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .statsHighlights,
+  .playerStatsGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:560px){
+  .pageTabs{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  .statsHeader{
+    gap:12px !important;
+  }
+  .statsToggle{
+    width:100%;
+    min-width:0;
+  }
+  .statsOverview{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .statsOverviewCard{
+    min-height:76px;
+    padding:12px;
+    border-radius:16px;
+  }
+  .statsOverviewCard strong{
+    font-size:21px;
+  }
+  .highlightCard,
+  .playerStatCard{
+    border-radius:18px;
+    padding:14px;
+  }
+  .playerStatMetrics{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:370px){
+  .statsOverview{
+    grid-template-columns:1fr;
+  }
+}

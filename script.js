@@ -4,6 +4,8 @@ const PLAYERS = ["Swetam", "Chirag", "Nikhar", "Rohit", "Saikat", "Sworoop", "Uj
 let currentPollBookingId = null;
 let latestBookings = [];
 let bookingListView = "upcoming";
+let statsView = "month";
+let latestPolls = [];
 
 function showPage(pageId) {
   document.querySelectorAll(".appPage").forEach(page => page.classList.toggle("active", page.id === pageId));
@@ -70,9 +72,11 @@ async function loadAll() {
     const bookings = (data.bookings || data || []).filter(b => b.id && b.date);
     bookings.sort((a,b) => new Date(a.date) - new Date(b.date));
     latestBookings = bookings;
+    latestPolls = data.polls || [];
     renderBookings(bookings);
-    renderPoll(bookings, data.polls || []);
+    renderPoll(bookings, latestPolls);
     renderWhatsAppReminder(bookings);
+    renderPlayerStats(bookings, latestPolls);
   } catch (e) {
     cards.innerHTML = `<p class="muted">Could not load bookings. Check your Apps Script Web App URL.</p>`;
     console.error(e);
@@ -307,6 +311,176 @@ async function copyWhatsAppReminder() {
   } catch (e) {
     if (status) status.textContent = "Could not copy automatically. Please select the text and copy it manually.";
   }
+}
+
+
+function setStatsView(view) {
+  statsView = view === "all" ? "all" : "month";
+  document.getElementById("statsMonthBtn")?.classList.toggle("active", statsView === "month");
+  document.getElementById("statsAllTimeBtn")?.classList.toggle("active", statsView === "all");
+  renderPlayerStats(latestBookings || [], latestPolls || []);
+}
+
+function renderPlayerStats(bookings = [], polls = []) {
+  const overview = document.getElementById("statsOverview");
+  const highlights = document.getElementById("statsHighlights");
+  const grid = document.getElementById("playerStatsGrid");
+  const description = document.getElementById("statsDescription");
+  if (!overview || !highlights || !grid) return;
+
+  const now = new Date();
+  const periodLabel = statsView === "month"
+    ? now.toLocaleDateString("en-GB", { month: "long", year: "numeric" })
+    : "All Time";
+
+  const periodBookings = (bookings || []).filter(booking => {
+    if (!booking || !booking.id || !booking.date) return false;
+    if (statsView === "all") return true;
+    const date = new Date(toInputDate(booking.date) + "T00:00:00");
+    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+  });
+
+  const pollEligibleBookings = periodBookings.filter(booking => normalizeStatus(booking.status) !== "Cancelled");
+  const eligibleIds = new Set(pollEligibleBookings.map(booking => String(booking.id)));
+  const latestVoteByBookingPlayer = {};
+
+  (polls || []).forEach(poll => {
+    const bookingId = String(poll.bookingId || "");
+    const player = normalizePlayerName(poll.player);
+    const answer = normalizePollAnswer(poll.answer);
+    if (!eligibleIds.has(bookingId) || !player || !answer) return;
+    latestVoteByBookingPlayer[`${bookingId}|${player}`] = answer;
+  });
+
+  const stats = PLAYERS.map(player => ({
+    player,
+    yes: 0,
+    no: 0,
+    votes: 0,
+    missed: 0,
+    bookingsCreated: 0,
+    availability: 0
+  }));
+
+  const statsByPlayer = Object.fromEntries(stats.map(item => [item.player, item]));
+
+  Object.entries(latestVoteByBookingPlayer).forEach(([key, answer]) => {
+    const player = key.split("|")[1];
+    const playerStats = statsByPlayer[player];
+    if (!playerStats) return;
+    if (answer === "Yes") playerStats.yes += 1;
+    if (answer === "No") playerStats.no += 1;
+  });
+
+  periodBookings.forEach(booking => {
+    const player = normalizePlayerName(booking.bookingBy || booking.name);
+    if (player && statsByPlayer[player]) statsByPlayer[player].bookingsCreated += 1;
+  });
+
+  stats.forEach(playerStats => {
+    playerStats.votes = playerStats.yes + playerStats.no;
+    playerStats.missed = Math.max(0, pollEligibleBookings.length - playerStats.votes);
+    playerStats.availability = playerStats.votes ? Math.round((playerStats.yes / playerStats.votes) * 100) : 0;
+  });
+
+  const totalYes = stats.reduce((sum, player) => sum + player.yes, 0);
+  const totalNo = stats.reduce((sum, player) => sum + player.no, 0);
+  const totalBookings = periodBookings.length;
+  const completedBookings = periodBookings.filter(booking => getDisplayStatus(booking) === "Completed").length;
+  const activeBookings = periodBookings.filter(booking => getDisplayStatus(booking) === "Active").length;
+  const cancelledBookings = periodBookings.filter(booking => normalizeStatus(booking.status) === "Cancelled").length;
+
+  if (description) {
+    description.textContent = statsView === "month"
+      ? `Stats for ${periodLabel}: availability votes, missed votes, and bookings created.`
+      : "All-time availability votes, missed votes, and bookings created.";
+  }
+
+  overview.innerHTML = `
+    <div class="statsOverviewCard"><span>Period</span><strong>${escapeHtml(periodLabel)}</strong></div>
+    <div class="statsOverviewCard"><span>Bookings</span><strong>${totalBookings}</strong></div>
+    <div class="statsOverviewCard yesStat"><span>Total Yes</span><strong>${totalYes}</strong></div>
+    <div class="statsOverviewCard noStat"><span>Total No</span><strong>${totalNo}</strong></div>
+    <div class="statsOverviewCard"><span>Active</span><strong>${activeBookings}</strong></div>
+    <div class="statsOverviewCard"><span>Completed</span><strong>${completedBookings}</strong></div>
+    <div class="statsOverviewCard"><span>Cancelled</span><strong>${cancelledBookings}</strong></div>
+  `;
+
+  const topAvailable = [...stats]
+    .filter(player => player.votes > 0)
+    .sort((a, b) => b.yes - a.yes || b.availability - a.availability || a.player.localeCompare(b.player))[0];
+  const topBooker = [...stats]
+    .filter(player => player.bookingsCreated > 0)
+    .sort((a, b) => b.bookingsCreated - a.bookingsCreated || a.player.localeCompare(b.player))[0];
+  const mostMissed = [...stats]
+    .filter(player => player.missed > 0 && pollEligibleBookings.length > 0)
+    .sort((a, b) => b.missed - a.missed || a.player.localeCompare(b.player))[0];
+
+  highlights.innerHTML = `
+    <div class="highlightCard">
+      <span>🏆 Most Available</span>
+      <strong>${topAvailable ? escapeHtml(topAvailable.player) : "No votes yet"}</strong>
+      <small>${topAvailable ? `${topAvailable.yes} Yes • ${topAvailable.availability}%` : "Vote data will appear here."}</small>
+    </div>
+    <div class="highlightCard">
+      <span>📌 Most Bookings Created</span>
+      <strong>${topBooker ? escapeHtml(topBooker.player) : "No bookings yet"}</strong>
+      <small>${topBooker ? `${topBooker.bookingsCreated} booking${topBooker.bookingsCreated === 1 ? "" : "s"}` : "Booking data will appear here."}</small>
+    </div>
+    <div class="highlightCard">
+      <span>⏳ Most Missed Votes</span>
+      <strong>${mostMissed ? escapeHtml(mostMissed.player) : "No missed votes"}</strong>
+      <small>${mostMissed ? `${mostMissed.missed} missed` : "Everyone is up to date for this period."}</small>
+    </div>
+  `;
+
+  if (!periodBookings.length) {
+    grid.innerHTML = `<div class="emptyState"><strong>No player stats yet.</strong><span>Add bookings and votes to see player stats for this period.</span></div>`;
+    return;
+  }
+
+  grid.innerHTML = stats
+    .sort((a, b) => b.yes - a.yes || b.bookingsCreated - a.bookingsCreated || a.player.localeCompare(b.player))
+    .map(player => renderPlayerStatCard(player, pollEligibleBookings.length))
+    .join("");
+}
+
+function renderPlayerStatCard(playerStats, eligibleBookingCount) {
+  const percent = playerStats.votes ? playerStats.availability : 0;
+  const voteLabel = playerStats.votes ? `${playerStats.yes} Yes / ${playerStats.no} No` : "No votes yet";
+  const progressWidth = Math.max(0, Math.min(100, percent));
+
+  return `
+    <article class="playerStatCard">
+      <div class="playerStatTop">
+        <div>
+          <strong>${escapeHtml(playerStats.player)}</strong>
+          <span>${escapeHtml(voteLabel)}</span>
+        </div>
+        <div class="availabilityBadge">${playerStats.votes ? `${percent}%` : "—"}</div>
+      </div>
+      <div class="statProgress" aria-label="Availability ${percent}%">
+        <span style="width:${progressWidth}%"></span>
+      </div>
+      <div class="playerStatMetrics">
+        <span class="yesMetric">Yes <b>${playerStats.yes}</b></span>
+        <span class="noMetric">No <b>${playerStats.no}</b></span>
+        <span>Missed <b>${eligibleBookingCount ? playerStats.missed : 0}</b></span>
+        <span>Booked <b>${playerStats.bookingsCreated}</b></span>
+      </div>
+    </article>`;
+}
+
+function normalizePlayerName(name) {
+  const raw = String(name || "").trim().toLowerCase();
+  return PLAYERS.find(player => player.toLowerCase() === raw) || "";
+}
+
+function normalizePollAnswer(answer) {
+  const value = String(answer || "").trim().toLowerCase();
+  if (value === "yes") return "Yes";
+  if (value === "no") return "No";
+  return "";
 }
 
 function timeRank(timing) {

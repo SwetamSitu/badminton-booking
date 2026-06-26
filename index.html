@@ -20,6 +20,7 @@
       <button type="button" class="tabBtn active" data-page="homePage" onclick="showPage('homePage')">🏠 Dashboard</button>
       <button type="button" class="tabBtn" data-page="managePage" onclick="showPage('managePage')">➕ New Booking</button>
       <button type="button" class="tabBtn" data-page="listPage" onclick="showPage('listPage')">📅 Bookings</button>
+      <button type="button" class="tabBtn" data-page="statsPage" onclick="showPage('statsPage')">📊 Stats</button>
     </nav>
 
 
@@ -43,6 +44,7 @@
             <li>Open the <strong>Dashboard</strong> tab to check the next booking availability and WhatsApp reminder.</li>
             <li>Use <strong>New Booking</strong> to add a court manually or from a screenshot.</li>
             <li>Use <strong>Bookings</strong> to view upcoming bookings, update statuses, open the archive, edit, or delete bookings.</li>
+            <li>Use <strong>Stats</strong> to check monthly and all-time player availability and booking contribution.</li>
           </ol>
         </section>
 
@@ -269,6 +271,26 @@
         </div>
         <p id="deletePastStatus" class="status"></p>
         <div id="bookingCards" class="bookingCards"></div>
+      </section>
+    </section>
+
+    <section id="statsPage" class="appPage">
+      <section class="card statsCard">
+        <div class="sectionTitle split statsHeader">
+          <div>
+            <p class="eyebrow">📊 Player Stats</p>
+            <h2>Player Stats</h2>
+            <p id="statsDescription" class="muted">Track Yes/No votes, availability percentage, missed votes, and bookings created.</p>
+          </div>
+          <div class="statsToggle" role="tablist" aria-label="Player stats period">
+            <button type="button" id="statsMonthBtn" class="statsToggleBtn active" onclick="setStatsView('month')">This Month</button>
+            <button type="button" id="statsAllTimeBtn" class="statsToggleBtn" onclick="setStatsView('all')">All Time</button>
+          </div>
+        </div>
+
+        <div id="statsOverview" class="statsOverview"></div>
+        <div id="statsHighlights" class="statsHighlights"></div>
+        <div id="playerStatsGrid" class="playerStatsGrid"></div>
       </section>
     </section>
     <footer class="appFooter">Made with ❤️ by Swetam Meher</footer>
