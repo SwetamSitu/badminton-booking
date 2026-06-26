@@ -1771,3 +1771,41 @@ body{
     font-size:12px !important;
   }
 }
+
+/* v1.18: Compact mobile place selector + improved navigation naming/order */
+@media (max-width: 640px){
+  #bookingForm .radioGroup{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+
+  #bookingForm .radioGroup label{
+    min-height:44px !important;
+    height:44px !important;
+    padding:8px 10px !important;
+    border-radius:14px !important;
+    font-size:14px !important;
+    font-weight:850 !important;
+    line-height:1.15 !important;
+    gap:8px !important;
+  }
+
+  #bookingForm .radioGroup input[type="radio"]{
+    width:16px !important;
+    height:16px !important;
+    min-width:16px !important;
+    min-height:0 !important;
+    flex:0 0 16px !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+}
+
+@media (max-width: 370px){
+  #bookingForm .radioGroup label{
+    font-size:13px !important;
+    padding:7px 8px !important;
+    gap:6px !important;
+  }
+}
