@@ -1541,3 +1541,89 @@ body{
   .pollCard .sectionTitle{padding-right:78px !important;}
   #pollMeta{margin-right:-78px !important;}
 }
+
+/* v1.15: Multi-session availability polls for multiple courts/times on the same day */
+.pollGrid{
+  gap:14px;
+}
+.pollSessionCard{
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(17,24,39,.04);
+}
+.pollSessionHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.sessionLabel{
+  margin:0 0 4px;
+  color:#c2410c;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:11px;
+}
+.pollSessionHeader h3{
+  margin:0;
+  font-size:18px;
+  line-height:1.25;
+}
+.sessionSummary{
+  margin:10px 0 12px;
+}
+.sessionVoteBox{
+  margin:0 0 14px;
+}
+.sessionResultLists{
+  margin-top:0;
+}
+
+@media(max-width:640px){
+  .pollGrid{
+    gap:12px;
+  }
+  .pollSessionCard{
+    padding:12px;
+    border-radius:18px;
+  }
+  .pollSessionHeader{
+    margin-bottom:10px;
+  }
+  .pollSessionHeader h3{
+    font-size:15px;
+    line-height:1.28;
+  }
+  .sessionSummary{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+    margin:8px 0 10px !important;
+  }
+  .sessionSummary .summaryCard{
+    min-height:54px;
+    padding:10px 12px !important;
+    border-radius:16px;
+  }
+  .sessionSummary .summaryCard strong{
+    font-size:26px !important;
+  }
+  .sessionVoteBox{
+    padding:10px !important;
+    gap:9px !important;
+    margin:0 0 10px !important;
+  }
+  .sessionVoteBox select{
+    min-height:44px !important;
+  }
+  .sessionVoteBox .choice{
+    min-height:42px !important;
+    height:42px !important;
+  }
+  .sessionResultLists{
+    gap:10px !important;
+  }
+}

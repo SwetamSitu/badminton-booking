@@ -29,7 +29,7 @@ https://fullgardaa-badminton.rweb.site/
 
 ### Dashboard
 
-The Dashboard shows the next upcoming active booking availability poll. Players can select their name, choose Yes or No, and submit their vote.
+The Dashboard shows the next upcoming active booking date. If there are multiple courts or time slots on that date, each session has its own Yes/No poll. Players can select their name, choose Yes or No, and submit their vote for each session.
 
 ### New Booking
 
@@ -119,3 +119,12 @@ Made with ❤️ by Swetam Meher.
 
 - Improved the mobile availability card heading so the date appears cleanly in the details line.
 - Reduced the Yes/No vote option height on mobile for a more compact layout.
+
+## v1.15 Multi-session support
+
+- The Dashboard now supports multiple active bookings on the same next available date.
+- Each court/time slot is shown as a separate session card.
+- Players can vote Yes/No separately for each session.
+- The poll heading now shows the booking date once, with the number of sessions available.
+- WhatsApp reminders already include all active bookings for the current booking day.
+- Duplicate prevention still only blocks the exact same date, place, timing, and court combination.

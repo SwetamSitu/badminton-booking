@@ -6,6 +6,8 @@ let latestBookings = [];
 let bookingListView = "upcoming";
 let statsView = "month";
 let latestPolls = [];
+let currentPollSessions = [];
+let currentPollSessionVotes = {};
 
 function showPage(pageId) {
   document.querySelectorAll(".appPage").forEach(page => page.classList.toggle("active", page.id === pageId));
@@ -149,8 +151,7 @@ function renderBookings(bookings) {
 }
 
 function renderPoll(bookings, polls) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const next = bookings.find(b => isActiveBooking(b) && new Date(toInputDate(b.date) + "T00:00:00") >= today);
+  const today = getTodayOnly();
   const pollCard = document.getElementById("pollCard");
   const pollTitle = document.getElementById("pollTitle");
   const pollMeta = document.getElementById("pollMeta");
@@ -160,34 +161,126 @@ function renderPoll(bookings, polls) {
   const pollResultLists = document.getElementById("pollResultLists");
   const pollEyebrow = document.getElementById("pollEyebrow");
 
+  if (!pollCard || !pollTitle || !pollMeta || !pollGrid) return;
   pollCard.classList.remove("hidden");
 
-  if (!next) {
+  const futureActiveBookings = (bookings || [])
+    .filter(booking => isActiveBooking(booking) && getBookingDateOnly(booking) >= today)
+    .sort((a, b) => getBookingDateOnly(a) - getBookingDateOnly(b) || timeRank(a.timing) - timeRank(b.timing) || String(a.court || "").localeCompare(String(b.court || "")));
+
+  if (!futureActiveBookings.length) {
     currentPollBookingId = null;
+    currentPollSessions = [];
+    currentPollSessionVotes = {};
     if (pollEyebrow) pollEyebrow.textContent = "🏸 Next Availability";
     pollTitle.textContent = "Next Availability";
     pollMeta.textContent = "No future active booking found. Add a future booking and the poll will appear here automatically.";
-    pollSummary.classList.add("hidden");
-    pollVoteBox.classList.add("hidden");
-    pollResultLists.classList.add("hidden");
+    pollSummary?.classList.add("hidden");
+    pollVoteBox?.classList.add("hidden");
+    pollResultLists?.classList.add("hidden");
     pollGrid.innerHTML = `<p class="muted">No poll available yet.</p>`;
     return;
   }
 
-  const nextDate = new Date(toInputDate(next.date) + "T00:00:00");
-  const isTodayPoll = nextDate.getTime() === today.getTime();
+  const nextDateIso = toInputDate(futureActiveBookings[0].date);
+  const sessions = futureActiveBookings.filter(booking => toInputDate(booking.date) === nextDateIso);
+  const isTodayPoll = nextDateIso === today.toLocaleDateString("en-CA");
   const availabilityLabel = isTodayPoll ? "Today's Availability" : "Next Availability";
 
-  currentPollBookingId = next.id;
+  currentPollBookingId = sessions[0]?.id || null;
+  currentPollSessions = sessions;
+  currentPollSessionVotes = {};
+
   if (pollEyebrow) pollEyebrow.textContent = `🏸 ${availabilityLabel}`;
   pollTitle.textContent = availabilityLabel;
-  pollMeta.textContent = `${formatDate(next.date)} • ${next.place} • ${next.court} • ${next.timing} • Booking by ${next.bookingBy || "-"}`;
+  pollMeta.textContent = `${formatDate(nextDateIso)} • ${sessions.length} session${sessions.length === 1 ? "" : "s"} available. Vote separately for each session you can attend.`;
 
-  const latest = Object.fromEntries((polls || []).filter(p => String(p.bookingId) === String(next.id)).map(p => [p.player, p.answer]));
-  updatePollSummary(latest);
-  renderPollVoteForm(latest);
-  renderPollResultLists(latest);
-  pollGrid.innerHTML = "";
+  // Hide the old single-session controls. Multi-session cards are rendered inside pollGrid.
+  pollSummary?.classList.add("hidden");
+  pollVoteBox?.classList.add("hidden");
+  pollResultLists?.classList.add("hidden");
+
+  pollGrid.innerHTML = sessions
+    .map((booking, index) => renderPollSessionCard(booking, index, polls || []))
+    .join("");
+}
+
+function renderPollSessionCard(booking, index, polls) {
+  const key = getSessionKey(booking.id);
+  const latest = getLatestVotesForBooking(polls, booking.id);
+  currentPollSessionVotes[key] = latest;
+
+  const yesPlayers = PLAYERS.filter(player => latest[player] === "Yes");
+  const noPlayers = PLAYERS.filter(player => latest[player] === "No");
+  const yesCount = yesPlayers.length;
+  const noCount = noPlayers.length;
+  const sessionTitle = `Session ${index + 1}`;
+  const sessionMeta = `${escapeHtml(booking.place)} • ${escapeHtml(booking.court)} • ${escapeHtml(booking.timing)} • Booking by ${escapeHtml(booking.bookingBy || "-")}`;
+  const playerOptions = PLAYERS.map(player => `<option value="${escapeAttr(player)}">${escapeHtml(player)}</option>`).join("");
+
+  return `
+    <article class="pollSessionCard" data-booking-id="${escapeAttr(booking.id)}">
+      <div class="pollSessionHeader">
+        <div>
+          <p class="sessionLabel">${sessionTitle}</p>
+          <h3>${sessionMeta}</h3>
+        </div>
+      </div>
+
+      <div class="pollSummary sessionSummary">
+        <div class="summaryCard yesCard"><span>Yes</span><strong>${yesCount}</strong></div>
+        <div class="summaryCard noCard"><span>No</span><strong>${noCount}</strong></div>
+      </div>
+
+      <div class="pollVoteBox sessionVoteBox">
+        <label for="pollPlayer_${key}">Select your name</label>
+        <select id="pollPlayer_${key}" onchange="syncSessionVote('${key}')">
+          <option value="">Choose name</option>${playerOptions}
+        </select>
+
+        <div class="voteChoice" role="radiogroup" aria-label="Availability vote for ${escapeAttr(sessionTitle)}">
+          <label class="choice yesChoice"><input type="radio" name="pollAnswer_${key}" value="Yes" /> Yes</label>
+          <label class="choice noChoice"><input type="radio" name="pollAnswer_${key}" value="No" /> No</label>
+        </div>
+
+        <button type="button" onclick="submitPollVote('${escapeAttr(booking.id)}','${key}')">Submit Vote</button>
+        <p id="pollVoteStatus_${key}" class="status"></p>
+      </div>
+
+      <div class="pollResultLists sessionResultLists">
+        <div class="resultList yesList">
+          <h3>Available</h3>
+          <div class="nameChips">${yesPlayers.length ? yesPlayers.map(name => `<span class="nameChip yesChip">${escapeHtml(name)}</span>`).join("") : `<span class="muted">No Yes votes yet.</span>`}</div>
+        </div>
+        <div class="resultList noList">
+          <h3>Not Available</h3>
+          <div class="nameChips">${noPlayers.length ? noPlayers.map(name => `<span class="nameChip noChip">${escapeHtml(name)}</span>`).join("") : `<span class="muted">No votes yet.</span>`}</div>
+        </div>
+      </div>
+    </article>`;
+}
+
+function getLatestVotesForBooking(polls, bookingId) {
+  return Object.fromEntries(
+    (polls || [])
+      .filter(poll => String(poll.bookingId) === String(bookingId))
+      .map(poll => [normalizePlayerName(poll.player) || poll.player, normalizePollAnswer(poll.answer) || poll.answer])
+      .filter(([player, answer]) => player && answer)
+  );
+}
+
+function getSessionKey(bookingId) {
+  return `s${String(bookingId || "").replace(/[^a-zA-Z0-9_-]/g, "")}`;
+}
+
+function syncSessionVote(key) {
+  const latest = currentPollSessionVotes[key] || {};
+  const playerSelect = document.getElementById(`pollPlayer_${key}`);
+  if (!playerSelect) return;
+
+  document.querySelectorAll(`input[name="pollAnswer_${key}"]`).forEach(radio => {
+    radio.checked = radio.value === latest[playerSelect.value];
+  });
 }
 
 function renderPollVoteForm(latest) {
@@ -237,22 +330,25 @@ function updatePollSummary(latest) {
   pollSummary.classList.remove("hidden");
 }
 
-async function submitPollVote() {
-  const player = document.getElementById("pollPlayer").value;
-  const answer = document.querySelector('input[name="pollAnswer"]:checked')?.value;
-  const pollVoteStatus = document.getElementById("pollVoteStatus");
+async function submitPollVote(bookingId = currentPollBookingId, sessionKey = "") {
+  const playerElement = sessionKey ? document.getElementById(`pollPlayer_${sessionKey}`) : document.getElementById("pollPlayer");
+  const answerSelector = sessionKey ? `input[name="pollAnswer_${sessionKey}"]:checked` : 'input[name="pollAnswer"]:checked';
+  const statusElement = sessionKey ? document.getElementById(`pollVoteStatus_${sessionKey}`) : document.getElementById("pollVoteStatus");
 
-  if (!currentPollBookingId) { pollVoteStatus.textContent = "No active poll found."; return; }
-  if (!player) { pollVoteStatus.textContent = "Please select your name."; return; }
-  if (!answer) { pollVoteStatus.textContent = "Please select Yes or No."; return; }
+  const player = playerElement?.value || "";
+  const answer = document.querySelector(answerSelector)?.value || "";
 
-  pollVoteStatus.textContent = "Saving vote...";
-  const result = await postData({ action: "savePoll", bookingId: currentPollBookingId, player, answer });
+  if (!bookingId) { if (statusElement) statusElement.textContent = "No active poll found."; return; }
+  if (!player) { if (statusElement) statusElement.textContent = "Please select your name."; return; }
+  if (!answer) { if (statusElement) statusElement.textContent = "Please select Yes or No."; return; }
+
+  if (statusElement) statusElement.textContent = "Saving vote...";
+  const result = await postData({ action: "savePoll", bookingId, player, answer });
   if (result.success) {
-    pollVoteStatus.textContent = "Vote saved.";
-    loadAll();
+    if (statusElement) statusElement.textContent = "Vote saved.";
+    await loadAll();
   } else {
-    pollVoteStatus.textContent = result.message || "Could not save vote.";
+    if (statusElement) statusElement.textContent = result.message || "Could not save vote.";
   }
 }
 
