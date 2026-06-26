@@ -59,7 +59,7 @@ The Bookings section has two views:
 - **Upcoming**: active upcoming bookings.
 - **Archive**: past bookings, cancelled bookings, and completed bookings.
 
-You can edit booking details, cancel active bookings, or delete bookings from each card. Cancelled bookings are kept in the Archive, while deleted bookings are permanently removed. Past bookings can also be deleted using the Delete Past Bookings button.
+You can edit booking details, cancel active bookings, or delete individual bookings from each card. Cancelled bookings and past/completed bookings are kept in the Archive for history, while deleted bookings are permanently removed.
 
 ### Stats
 

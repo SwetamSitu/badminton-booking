@@ -560,54 +560,6 @@ async function deleteBooking(id) {
   if (result.success) loadAll(); else alert(result.message || "Delete failed.");
 }
 
-async function deletePastBookings() {
-  const deleteStatus = document.getElementById("deletePastStatus");
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const pastBookings = (latestBookings || []).filter(booking => {
-    const bookingDate = new Date(toInputDate(booking.date) + "T00:00:00");
-    return bookingDate < today;
-  });
-
-  if (!pastBookings.length) {
-    if (deleteStatus) deleteStatus.textContent = "No past bookings found.";
-    else alert("No past bookings found.");
-    return;
-  }
-
-  const confirmed = await showConfirmDialog({
-    title: "Delete past bookings?",
-    message: `You are about to delete ${pastBookings.length} past booking${pastBookings.length > 1 ? "s" : ""}. This action cannot be undone.`,
-    confirmText: "Delete Past Bookings",
-    cancelText: "Cancel",
-    danger: true
-  });
-
-  if (!confirmed) return;
-
-  if (deleteStatus) deleteStatus.textContent = "Deleting past bookings...";
-
-  try {
-    const results = await Promise.all(pastBookings.map(booking =>
-      postData({ action: "deleteBooking", id: booking.id })
-    ));
-
-    const failed = results.filter(result => !result.success);
-    if (failed.length) {
-      if (deleteStatus) deleteStatus.textContent = `${failed.length} booking${failed.length > 1 ? "s" : ""} could not be deleted.`;
-      alert(`${failed.length} booking${failed.length > 1 ? "s" : ""} could not be deleted. Please try again.`);
-    } else if (deleteStatus) {
-      deleteStatus.textContent = "Past bookings deleted successfully.";
-    }
-
-    loadAll();
-  } catch (e) {
-    console.error(e);
-    if (deleteStatus) deleteStatus.textContent = "Delete failed. Please try again.";
-    else alert("Delete failed. Please try again.");
-  }
-}
 
 
 function normalizeStatus(status) {

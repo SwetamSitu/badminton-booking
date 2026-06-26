@@ -262,14 +262,12 @@
           </div>
           <div class="buttonRow liveListActions">
             <button class="secondary liveRefreshBtn" onclick="refreshLiveListWithLoading(this)"><span class="refreshIcon">↻</span><span class="refreshText">Refresh</span></button>
-            <button class="danger" onclick="deletePastBookings()">Delete Past Bookings</button>
           </div>
         </div>
         <div class="bookingViewToggle" role="tablist" aria-label="Booking list view">
           <button type="button" id="upcomingViewBtn" class="bookingViewBtn active" onclick="setBookingView('upcoming')">Upcoming</button>
           <button type="button" id="archiveViewBtn" class="bookingViewBtn" onclick="setBookingView('archive')">Archive</button>
         </div>
-        <p id="deletePastStatus" class="status"></p>
         <div id="bookingCards" class="bookingCards"></div>
       </section>
     </section>
