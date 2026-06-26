@@ -128,3 +128,11 @@ Made with ❤️ by Swetam Meher.
 - The poll heading now shows the booking date once, with the number of sessions available.
 - WhatsApp reminders already include all active bookings for the current booking day.
 - Duplicate prevention still only blocks the exact same date, place, timing, and court combination.
+
+
+## v1.16 Update - Desktop multi-session layout fix
+
+- Improved desktop layout for multiple sessions on the Dashboard.
+- Prevented poll session cards from squeezing or overflowing.
+- Kept each session vote form clean and stacked on desktop.
+- Preserved the existing mobile layout and colour palette.
